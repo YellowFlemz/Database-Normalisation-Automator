@@ -3,6 +3,9 @@ from itertools import combinations
 from typing import List, Tuple, Any
 import codetotable as mml
 
+#TODO: Seperate MMLCalculator into a seperate file
+#TODO: Create a class that contains multiple tables
+
 class MMLCalculator:
     def __init__(self, tabletotal: int, attributes: int, unique_counts: List[int], rows: int):
         self.tabletotal = tabletotal
@@ -32,16 +35,14 @@ class Table:
         self.unique_counts = self._count_unique_instances_per_column()
         # Currently hardcoded to 1 table, must change later for further NFs
         self.mml_calculator = MMLCalculator(1, len(self.header), self.unique_counts, len(self.rows))
-        
-    """Generate all possible combinations of given columns."""
-    def _get_combinations(self, columns: List[str]) -> List[Tuple[int, ...]]:
-        col_indices = [self.header.index(col) for col in columns]
-        return list(combinations(col_indices, len(columns)))
     
     """Check if the given combination of column indices has unique values for all rows."""
     def _is_unique_combination(self, combination: Tuple[int, ...]) -> bool:
         seen = set()
         for row in self.rows:
+            # key is the values in the row at the specified indices
+            # e.g. row = (1, "Alice", 30, "New York"), combination = (0, 1, 2)
+            # key = (1, "Alice", 30)
             key = tuple(row[i] for i in combination)
             if key in seen:
                 return False
@@ -52,6 +53,7 @@ class Table:
     def _count_unique_instances_per_column(self) -> List[int]:
         unique_counts = []
         for col_index in range(len(self.header)):
+            # set() removes duplicates
             unique_values = set(row[col_index] for row in self.rows)
             unique_counts.append(len(unique_values))
         return unique_counts
@@ -65,11 +67,6 @@ class Table:
                 if self._is_unique_combination(comb):
                     valid_combinations.append(tuple(self.header[i] for i in comb))
         return valid_combinations
-    
-    """Display the table."""
-    def display_table(self) -> None:
-        for row in self.table_data:
-            print('\t'.join(map(str, row)))
     
     """Calculate MML for all valid primary key combinations and return the one with the shortest MML."""
     def calculate_mml_for_combinations(self) -> Tuple[Tuple[str, ...], float]:
@@ -86,7 +83,12 @@ class Table:
         
         return best_combination, best_mml
 
-# Example usage:
+    """Display the table."""
+    def display_table(self) -> None:
+        for row in self.table_data:
+            print('\t'.join(map(str, row)))
+
+# Testing data
 table_data: List[List[Any]] = [
     ["id", "name", "age", "city"],
     [1, "Alice", 30, "New York"],
