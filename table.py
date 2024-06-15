@@ -85,7 +85,7 @@ class Table:
 
 # Testing data
 table_data = [
-    ["id*", "name", "age", "city"],
+    ["id", "name", "age", "city"],
     [1, "Alice", 30, "Melbourne"],
     [2, "Bob", 25, "Sydney"],
     [3, "Charlie", 35, "Hobart"],
