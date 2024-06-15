@@ -2,6 +2,7 @@ import math
 from itertools import combinations
 from typing import List, Tuple, Any
 import codetotable as mml
+import util
 
 #TODO: Create a database class which contains multiple tables for 2NF+
 
@@ -9,9 +10,10 @@ class Table:
 
     def __init__(self, table_data: List[List[Any]]):
         self.table_data = table_data
-        self.keys = table_data[0]
+        self.keys = util.remove_asterisks(table_data[0])
         self.key_count = len(self.keys)
-        self.primary_keys = [key for key in self.keys if key[-1] == "*"]
+        # primary keys are indicated with an asterisk (*) at the end of the key name
+        self.primary_keys = [key for key in table_data[0] if key[-1] == "*"]
         self.primary_key_count = len(self.primary_keys)
         self.rows = table_data[1:]
         self.unique_counts = self._count_unique_instances_per_column()
@@ -83,7 +85,7 @@ class Table:
 
 # Testing data
 table_data = [
-    ["id", "name", "age", "city"],
+    ["id*", "name", "age", "city"],
     [1, "Alice", 30, "Melbourne"],
     [2, "Bob", 25, "Sydney"],
     [3, "Charlie", 35, "Hobart"],
@@ -108,5 +110,7 @@ print(f"Best combination for primary key: {best_combination} with MML: {best_mml
 best_1NF_table = table.create_1NF_table()
 print("\nBest 1NF Table:")
 best_1NF_table.display_table()
-#print(table.primary_keys)
-#print(best_1NF_table.primary_keys)
+# print(table.primary_keys)
+# print(table.keys)
+# print(best_1NF_table.primary_keys)
+# print(best_1NF_table.keys)
