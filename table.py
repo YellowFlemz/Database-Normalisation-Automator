@@ -3,39 +3,19 @@ from itertools import combinations
 from typing import List, Tuple, Any
 import codetotable as mml
 
-#TODO: Seperate MMLCalculator into a seperate file
-#TODO: Create a class that contains multiple tables
-
-class MMLCalculator:
-    def __init__(self, tabletotal: int, attributes: int, unique_counts: List[int], rows: int):
-        self.tabletotal = tabletotal
-        self.attributes = attributes
-        self.unique_counts = unique_counts
-        self.rows = rows
-
-    def calculate_H(self, tables: List[Tuple[int, int]]) -> float:
-        return mml.H(self.tabletotal, self.attributes, tables)
-    
-    def calculate_A(self, data: List[Tuple[int, List[int]]]) -> float:
-        return mml.A(data)
-    
-    def calculate_I(self, tables: List[Tuple[int, int]], data: List[Tuple[int, List[int]]]) -> float:
-        return mml.I(self.tabletotal, self.attributes, tables, data)
-    
-    def calculate_mml_for_combination(self, comb: Tuple[int, ...], total_columns: int) -> float:
-        tables = [(total_columns, len(comb))]
-        data = [(self.rows, self.unique_counts)]
-        return self.calculate_I(tables, data)
+#TODO: Create a database class which contains multiple tables for 2NF+
 
 class Table:
+
     def __init__(self, table_data: List[List[Any]]):
         self.table_data = table_data
-        self.header = table_data[0]
+        self.keys = table_data[0]
+        self.key_count = len(self.keys)
+        self.primary_keys = [key for key in self.keys if key[-1] == "*"]
+        self.primary_key_count = len(self.primary_keys)
         self.rows = table_data[1:]
         self.unique_counts = self._count_unique_instances_per_column()
-        # Currently hardcoded to 1 table, must change later for further NFs
-        self.mml_calculator = MMLCalculator(1, len(self.header), self.unique_counts, len(self.rows))
-    
+
     """Check if the given combination of column indices has unique values for all rows."""
     def _is_unique_combination(self, combination: Tuple[int, ...]) -> bool:
         seen = set()
@@ -52,7 +32,7 @@ class Table:
     """Count the number of unique instances for each column."""
     def _count_unique_instances_per_column(self) -> List[int]:
         unique_counts = []
-        for col_index in range(len(self.header)):
+        for col_index in range(len(self.keys)):
             # set() removes duplicates
             unique_values = set(row[col_index] for row in self.rows)
             unique_counts.append(len(unique_values))
@@ -60,12 +40,12 @@ class Table:
 
     """Generate all valid combinations of columns as primary keys."""
     def get_valid_primary_key_combinations(self) -> List[Tuple[str, ...]]:
-        num_columns = len(self.header)
+        num_columns = len(self.keys)
         valid_combinations = []
         for r in range(1, num_columns + 1):
             for comb in combinations(range(num_columns), r):
                 if self._is_unique_combination(comb):
-                    valid_combinations.append(tuple(self.header[i] for i in comb))
+                    valid_combinations.append(tuple(self.keys[i] for i in comb))
         return valid_combinations
     
     """Calculate MML for all valid primary key combinations and return the one with the shortest MML."""
@@ -75,7 +55,8 @@ class Table:
         best_mml = float('inf')
         
         for comb in valid_combinations:
-            mml_value = self.mml_calculator.calculate_mml_for_combination(comb, len(self.header))
+            # Calculates the MML value for the current combination
+            mml_value = mml.I(1, self.key_count, [(self.key_count, len(comb))], [(len(self.rows), self.unique_counts)])
             # Break MML tiebreaks with the lowest number of attributes in primary key
             if mml_value < best_mml or (mml_value == best_mml and (best_combination is None or len(comb) < len(best_combination))):
                 best_mml = mml_value
@@ -83,25 +64,36 @@ class Table:
         
         return best_combination, best_mml
 
+    """Create a new table with the best primary key combination found."""
+    def create_1NF_table(self):
+        best_combination, _ = self.calculate_mml_for_combinations()
+        new_keys = [f"{col}*" if col in best_combination else col for col in self.keys]
+        
+        # Create new table data with the updated keys
+        new_table_data = [new_keys] + self.rows
+        
+        # Return a new Table object with the updated data
+        return Table(new_table_data)
+
     """Display the table."""
     def display_table(self) -> None:
         for row in self.table_data:
             print('\t'.join(map(str, row)))
 
 # Testing data
-table_data: List[List[Any]] = [
+table_data = [
     ["id", "name", "age", "city"],
-    [1, "Alice", 30, "New York"],
-    [2, "Bob", 25, "Los Angeles"],
-    [3, "Charlie", 35, "Chicago"],
-    [4, "Charlie", 23, "Las Vegas"],
-    [5, "Alice", 30, "Chicago"]
+    [1, "Alice", 30, "Melbourne"],
+    [2, "Bob", 25, "Sydney"],
+    [3, "Charlie", 35, "Hobart"],
+    [4, "Charlie", 23, "Melbourne"],
+    [5, "Alice", 30, "Hobart"]
 ]
 
 table = Table(table_data)
 table.display_table()
 
-valid_primary_key_combinations: List[Tuple[str, ...]] = table.get_valid_primary_key_combinations()
+valid_primary_key_combinations = table.get_valid_primary_key_combinations()
 print("All valid combinations of primary keys:")
 for comb in valid_primary_key_combinations:
     print(comb)
@@ -110,3 +102,10 @@ print("Unique instances per column:", table.unique_counts)
 
 best_combination, best_mml = table.calculate_mml_for_combinations()
 print(f"Best combination for primary key: {best_combination} with MML: {best_mml}")
+
+# Create and display the new 1NF table
+best_1NF_table = table.create_1NF_table()
+print("\nBest 1NF Table:")
+best_1NF_table.display_table()
+#print(table.primary_keys)
+#print(best_1NF_table.primary_keys)
