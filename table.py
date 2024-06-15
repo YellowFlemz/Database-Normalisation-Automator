@@ -16,19 +16,6 @@ class Table:
         self.rows = table_data[1:]
         self.unique_counts = self._count_unique_instances_per_column()
 
-    """Check if the given combination of column indices has unique values for all rows."""
-    def _is_unique_combination(self, combination: Tuple[int, ...]) -> bool:
-        seen = set()
-        for row in self.rows:
-            # key is the values in the row at the specified indices
-            # e.g. row = (1, "Alice", 30, "New York"), combination = (0, 1, 2)
-            # key = (1, "Alice", 30)
-            key = tuple(row[i] for i in combination)
-            if key in seen:
-                return False
-            seen.add(key)
-        return True
-    
     """Count the number of unique instances for each column."""
     def _count_unique_instances_per_column(self) -> List[int]:
         unique_counts = []
@@ -38,11 +25,25 @@ class Table:
             unique_counts.append(len(unique_values))
         return unique_counts
 
+    """Check if the given combination of column indices has unique values for all rows."""
+    def _is_unique_combination(self, combination: Tuple[int, ...]) -> bool:
+        seen = set()
+        for row in self.rows:
+            # subset is the values in the row at the specified indices
+            # e.g. row = (1, "Alice", 30, "New York"), combination = (0, 1, 2)
+            # subset = (1, "Alice", 30)
+            subset = tuple(row[i] for i in combination)
+            if subset in seen:
+                return False
+            seen.add(subset)
+        return True
+
     """Generate all valid combinations of columns as primary keys."""
     def get_valid_primary_key_combinations(self) -> List[Tuple[str, ...]]:
         num_columns = len(self.keys)
         valid_combinations = []
         for r in range(1, num_columns + 1):
+            # combinatorics to get all combinations of r columns
             for comb in combinations(range(num_columns), r):
                 if self._is_unique_combination(comb):
                     valid_combinations.append(tuple(self.keys[i] for i in comb))
