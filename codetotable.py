@@ -9,6 +9,7 @@ def H(tabletotal: int, a: int, tables: list[tuple[int, int]]) -> float:
     total = len(tables) * math.log2(a) + tabletotal
     for table in tables:
         at, pt = table[0], table[1]
+        # Change math.log2(at)
         total += (math.log2(math.comb(a, at)) + math.log2(at) + math.log2(math.comb(at, pt)))
     return round(total, 2)
 

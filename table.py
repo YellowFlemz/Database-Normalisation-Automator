@@ -67,50 +67,7 @@ class Table:
         
         return best_combination, best_mml
 
-    """Create a new table with the best primary key combination found."""
-    def create_1NF_table(self):
-        best_combination, _ = self.calculate_mml_for_combinations()
-        new_keys = [f"{col}*" if col in best_combination else col for col in self.keys]
-        
-        # Create new table data with the updated keys
-        new_table_data = [new_keys] + self.rows
-        
-        # Return a new Table object with the updated data
-        return Table(new_table_data)
-
     """Display the table."""
     def display_table(self) -> None:
         for row in self.table_data:
             print('\t'.join(map(str, row)))
-
-# Testing data
-table_data = [
-    ["id", "name", "age", "city"],
-    [1, "Alice", 30, "Melbourne"],
-    [2, "Bob", 25, "Sydney"],
-    [3, "Charlie", 35, "Hobart"],
-    [4, "Charlie", 23, "Melbourne"],
-    [5, "Alice", 30, "Hobart"]
-]
-
-table = Table(table_data)
-table.display_table()
-
-valid_primary_key_combinations = table.get_valid_primary_key_combinations()
-print("All valid combinations of primary keys:")
-for comb in valid_primary_key_combinations:
-    print(comb)
-
-print("Unique instances per column:", table.unique_counts)
-
-best_combination, best_mml = table.calculate_mml_for_combinations()
-print(f"Best combination for primary key: {best_combination} with MML: {best_mml}")
-
-# Create and display the new 1NF table
-best_1NF_table = table.create_1NF_table()
-print("\nBest 1NF Table:")
-best_1NF_table.display_table()
-# print(table.primary_keys)
-# print(table.keys)
-# print(best_1NF_table.primary_keys)
-# print(best_1NF_table.keys)
