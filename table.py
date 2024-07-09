@@ -51,9 +51,8 @@ class Table:
     
     """
     Calculate MML for all valid primary key combinations and return the one with the shortest MML.
-    Effectively returns 1NF table with the best primary key combination (according to MML).
     """
-    def calculate_mml_for_combinations(self) -> Tuple[Tuple[str, ...], float]:
+    def calculate_best_primary_keys(self) -> Tuple[Tuple[str, ...], float]:
         valid_combinations = self.get_valid_primary_key_combinations()
         best_combination = None
         best_mml = float('inf')

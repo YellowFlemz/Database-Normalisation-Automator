@@ -32,14 +32,14 @@ print("All valid combinations of primary keys for table 1:")
 for comb in valid_primary_key_combinations1:
     print(comb)
 print("Unique instances per column:", table1.unique_counts)
-best_combination, best_mml = table1.calculate_mml_for_combinations()
+best_combination, best_mml = table1.calculate_best_primary_keys()
 print(f"Best combination for primary key: {best_combination} with MML: {best_mml}")
 
 print("All valid combinations of primary keys for table 2:")
 for comb in valid_primary_key_combinations2:
     print(comb)
 print("Unique instances per column:", table2.unique_counts)
-best_combination, best_mml = table2.calculate_mml_for_combinations()
+best_combination, best_mml = table2.calculate_best_primary_keys()
 print(f"Best combination for primary key: {best_combination} with MML: {best_mml}")
 
 # Create and display the new 1NF table
