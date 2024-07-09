@@ -4,11 +4,11 @@ import math
 # A represents number of total attributes, at represents number of attributes in the current table, pt represents number of primary attributes in the current table
 # e.g. tabletotal = 1, A = 10, at = 10, pt = 3
 # call H(1, 10, [(10, 3)])
-def H(tabletotal: int, a: int, tables: list[tuple[int, int]]) -> float:
+def H(tabletotal: int, a: int, atpttuples: list[tuple[int, int]]) -> float:
     # Tabletotal is added to total as representation for unary coding
-    total = len(tables) * math.log2(a) + tabletotal
-    for table in tables:
-        at, pt = table[0], table[1]
+    total = len(atpttuples) * math.log2(a) + tabletotal
+    for atpttuple in atpttuples:
+        at, pt = atpttuple[0], atpttuple[1]
         # Change math.log2(at)
         total += (math.log2(math.comb(a, at)) + math.log2(at) + math.log2(math.comb(at, pt)))
     return round(total, 2)
@@ -27,8 +27,8 @@ def A(data: list[tuple[int, list]]) -> float:
 # This is the final MML encoding value calculated by adding the values from #H and #A
 # e.g. I = H(1, 10, [(10, 3)]) + A([(11, [5, 5, 5, 5, 4, 4, 2, 2, 3, 3])])
 # call I(1, 10, [(10, 3)], [(11, [5, 5, 5, 5, 4, 4, 2, 2, 3, 3)])
-def I(tabletotal: int, a: int, tables: list[tuple[int, int]], data: list[tuple[int, list]]) -> float:
-    return round(H(tabletotal, a, tables) + A(data), 2)
+def I(tabletotal: int, a: int, atpttuples: list[tuple[int, int]], data: list[tuple[int, list]]) -> float:
+    return round(H(tabletotal, a, atpttuples) + A(data), 2)
 
 # Function to create LaTeX table syntax
 # refer to testcodetotable.py for example usage

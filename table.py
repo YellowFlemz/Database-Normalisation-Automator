@@ -4,8 +4,6 @@ from typing import List, Tuple, Any
 import codetotable as mml
 import util
 
-#TODO: Create a database class which contains multiple tables for 2NF+
-
 class Table:
 
     def __init__(self, table_data: List[List[Any]]):
@@ -51,7 +49,10 @@ class Table:
                     valid_combinations.append(tuple(self.keys[i] for i in comb))
         return valid_combinations
     
-    """Calculate MML for all valid primary key combinations and return the one with the shortest MML."""
+    """
+    Calculate MML for all valid primary key combinations and return the one with the shortest MML.
+    Effectively returns 1NF table with the best primary key combination (according to MML).
+    """
     def calculate_mml_for_combinations(self) -> Tuple[Tuple[str, ...], float]:
         valid_combinations = self.get_valid_primary_key_combinations()
         best_combination = None

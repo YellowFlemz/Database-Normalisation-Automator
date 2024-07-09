@@ -47,7 +47,4 @@ best_1NF_tables = normalforms.create_1NF_tables([table1, table2])
 print("\nBest 1NF Table(s):")
 for t in best_1NF_tables:
     t.display_table()
-# print(table.primary_keys)
-# print(table.keys)
-# print(best_1NF_table.primary_keys)
-# print(best_1NF_table.keys)
+print(normalforms.calculate_mml([table1, table2]))
