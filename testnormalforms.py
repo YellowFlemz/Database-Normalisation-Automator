@@ -12,12 +12,12 @@ table_data = [
 ]
 
 table_data2 = [
-    ["studentNo", "studentName", "age", "GPA"],
-    [10393, "Maverick", 18, "2.5"],
-    [20392, "Ash", 17, "3.2"],
-    [12345, "Bobby", 19, "2.9"],
-    [29392, "Alex", 19, "4.2"],
-    [19999, "Alex", 18, "4.5"]
+    ["studentName", "age", "GPA", "studentNo"],
+    ["Maverick", 18, "2.5", 10393],
+    ["Ash", 17, "3.2", 20392],
+    ["Bobby", 19, "2.9", 12345],
+    ["Alex", 19, "4.2", 29392],
+    ["Alex", 18, "4.2", 19999]
 ]
 
 table1 = Table(table_data)
