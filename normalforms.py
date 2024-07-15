@@ -1,8 +1,9 @@
 from table import Table
 from typing import List, Tuple, Any
 import codetotable as mml
+import util
 
-def create_1NF_tables(tables: List[Table]):
+def create_1NF_tables(tables: List[Table]) -> List[Table]:
     res = []
     for table in tables:
         best_combination, _ = table.calculate_best_primary_keys()
@@ -19,10 +20,18 @@ def create_2NF_tables(tables: List[Table]):
     # Rearrange tables into all possible 2NF structures
     # The goal of this function is to take in a list of tables and return them in the best 2NF form according to MML
     # First, for each table, we need to see if there is any possible partial dependency between all sets of primary keys and non-primary keys
-    pass
+    for table in tables:
+        dependencies = []
+        p_key_subsets = util.get_all_combinations(table.primary_keys)
+        n_key_subsets = util.get_all_combinations(table.non_primary_keys)
+        for p_key_subset in p_key_subsets:
+            for n_key_subset in n_key_subsets:
+                if possible_partial_dependency(table, p_key_subset, n_key_subset):
+                    dependencies.append((p_key_subset, "-->", n_key_subset))
+        print(dependencies)
 
 # Function that takes as input a list of tables and returns the MML encoding value
-def calculate_mml(tables: List[Table]):
+def calculate_mml(tables: List[Table]) -> float:
     # Calculate tabletotal
     tablecount = len(tables)
     # Holds atpttuples

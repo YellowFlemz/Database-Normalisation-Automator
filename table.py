@@ -11,9 +11,9 @@ class Table:
         self.keys = util.remove_asterisks(table_data[0])
         self.key_count = len(self.keys)
         # Primary keys are indicated with an asterisk (*) at the end of the key name upon initialisation
-        # However, asterisks are removed from all key lists after initialisation
+        # However, asterisks are removed from all key lists after initialisation (EXCEPT in table_data[0])
         self.primary_keys = util.remove_asterisks([key for key in table_data[0] if key[-1] == "*"])
-        self.non_primary_keys = [key for key in table_data[0] if key not in self.primary_keys]
+        self.non_primary_keys = [key for key in table_data[0] if key[-1] != "*"]
         self.primary_key_count = len(self.primary_keys)
         self.rows = table_data[1:]
         self.unique_counts = self._count_unique_instances_per_column()

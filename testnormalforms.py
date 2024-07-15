@@ -3,12 +3,12 @@ from table import Table
 
 # Create sample tables
 table_data = [
-    ["id", "name", "age", "city"],
-    [1, "Alice", 30, "Melbourne"],
-    [2, "Bob", 25, "Sydney"],
-    [3, "Charlie", 35, "Hobart"],
-    [4, "Charlie", 23, "Melbourne"],
-    [5, "Alice", 30, "Hobart"]
+    ["EMPLOYEE_ID", "NAME", "JOB_CODE", "JOB", "STATE_CODE", "HOME_STATE"],
+    [1, "Alice", 1, "Chef", 26, "Michigan"],
+    [1, "Alice", 2, "Waiter", 26, "Michigan"],
+    [2, "Charlie", 2, "Waiter", 56, "Wyoming"],
+    [2, "Charlie", 3, "Bartender", 56, "Wyoming"],
+    [3, "Alice", 1, "Chef", 56, "Wyoming"],
 ]
 
 table_data2 = [
@@ -56,3 +56,6 @@ print(normalforms.possible_partial_dependency(table2, ("studentName", "age"), ("
 print(normalforms.possible_partial_dependency(table2, ["studentName"], ["GPA"])) # Expected True
 print(normalforms.possible_partial_dependency(table2, ["studentName"], ["GPA", "studentNo"])) # Expected False
 print(normalforms.possible_partial_dependency(table2, ["studentName", "age"], ["GPA"])) # Expected True
+
+# Testing create_2NF_tables function
+best_2NF_tables = normalforms.create_2NF_tables(best_1NF_tables)
