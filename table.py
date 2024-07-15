@@ -12,9 +12,14 @@ class Table:
         self.key_count = len(self.keys)
         # primary keys are indicated with an asterisk (*) at the end of the key name
         self.primary_keys = [key for key in table_data[0] if key[-1] == "*"]
+        self.non_primary_keys = [key for key in table_data[0] if key not in self.primary_keys]
         self.primary_key_count = len(self.primary_keys)
         self.rows = table_data[1:]
         self.unique_counts = self._count_unique_instances_per_column()
+
+    def get_key_column(self, key: str) -> List[Any]:
+        key_index = self.keys.index(key)
+        return [row[key_index] for row in self.rows]
 
     """Count the number of unique instances for each column."""
     def _count_unique_instances_per_column(self) -> List[int]:

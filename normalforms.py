@@ -1,5 +1,5 @@
 from table import Table
-from typing import List
+from typing import List, Tuple, Any
 import codetotable as mml
 
 def create_1NF_tables(tables: List[Table]):
@@ -17,6 +17,7 @@ def create_1NF_tables(tables: List[Table]):
 
 def create_2NF_tables(tables: List[Table]):
     # Rearrange tables into all possible 2NF structures
+    # The goal of this function is to take in a list of tables and return them in the best 2NF form according to MML
     pass
 
 # Function that takes as input a list of tables and returns the MML encoding value
@@ -43,3 +44,38 @@ def calculate_mml(tables: List[Table]):
     attributecount = len(attributeset)
     # Call and return I() with respective arguments
     return mml.I(tablecount, attributecount, tuplelist, datalist)
+
+'''
+    This function will return true if for each primary keyset, their respective non-primary keyset are the same.
+    e.g. assume a table like t = [
+    ["studentName", "age", "GPA", "studentNo"],
+    ["Maverick", 18, "2.5", 10393],
+    ["Ash", 17, "3.2", 20392],
+    ["Bobby", 19, "2.9", 12345],
+    ["Alex", 18, "4.2", 29392],
+    ["Alex", 18, "4.2", 19999]]
+    and we call is_partial_dependency(t, ["studentName"], ["GPA", "studentNo"]).
+    This will return False because for the studentName entry Alex, there are two different GPA and studentNo pairs (4.2, 29392) and (4.2, 19999).
+    However for simply is_partial_dependency(t, ["studentName"], ["GPA"]), this will return True because for each studentName entry, the GPA is the same.
+    '''
+def possible_partial_dependency(table: Table, pkeys: List[Any], nkeys: List[Any]) -> bool:
+    # Implementation idea:
+    # If we take the length of the set of the primary keyset and the combined keyset, and they are the same, 
+    # then we can say that the non-primary values always match their primary values (i.e. the primary key values don't conflict with their non-primary key values).
+    # In contrast, if the length of the combined keyset > primary keyset, then we can say that at least one of the primary keys has conflicting non-primary keys.
+    pkeylist = [table.get_key_column(pkeys[i]) for i in range(len(pkeys))]
+    nkeylist = [table.get_key_column(nkeys[i]) for i in range(len(nkeys))]
+    combinedlist = pkeylist + nkeylist
+    pkeyset = set(zip(*pkeylist))
+    combinedset = set(zip(*combinedlist))
+    return len(pkeyset) == len(combinedset)
+
+'''
+["studentName", "age", "GPA", "studentNo"],
+    ["Maverick", 18, "2.5", 10393],
+    ["Maverick", 18, "2.6", 10393],
+    ["Ash", 17, "3.2", 20392],
+    ["Bobby", 19, "2.9", 12345],
+    ["Alex", 18, "4.2", 29392],
+    ["Alex", 18, "4.2", 19999]]
+'''

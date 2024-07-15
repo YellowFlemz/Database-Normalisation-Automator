@@ -16,7 +16,7 @@ table_data2 = [
     ["Maverick", 18, "2.5", 10393],
     ["Ash", 17, "3.2", 20392],
     ["Bobby", 19, "2.9", 12345],
-    ["Alex", 19, "4.2", 29392],
+    ["Alex", 18, "4.2", 29392],
     ["Alex", 18, "4.2", 19999]
 ]
 
@@ -48,3 +48,9 @@ print("\nBest 1NF Table(s):")
 for t in best_1NF_tables:
     t.display_table()
 print(normalforms.calculate_mml([table1, table2]))
+
+# Testing possible_partial_dependency function
+print(normalforms.possible_partial_dependency(table2, ["studentName", "age"], ["GPA", "studentNo"])) # Expected False
+print(normalforms.possible_partial_dependency(table2, ["studentName"], ["GPA"])) # Expected True
+print(normalforms.possible_partial_dependency(table2, ["studentName"], ["GPA", "studentNo"])) # Expected False
+print(normalforms.possible_partial_dependency(table2, ["studentName", "age"], ["GPA"])) # Expected True
