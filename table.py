@@ -10,8 +10,9 @@ class Table:
         self.table_data = table_data
         self.keys = util.remove_asterisks(table_data[0])
         self.key_count = len(self.keys)
-        # primary keys are indicated with an asterisk (*) at the end of the key name
-        self.primary_keys = [key for key in table_data[0] if key[-1] == "*"]
+        # Primary keys are indicated with an asterisk (*) at the end of the key name upon initialisation
+        # However, asterisks are removed from all key lists after initialisation
+        self.primary_keys = util.remove_asterisks([key for key in table_data[0] if key[-1] == "*"])
         self.non_primary_keys = [key for key in table_data[0] if key not in self.primary_keys]
         self.primary_key_count = len(self.primary_keys)
         self.rows = table_data[1:]

@@ -50,7 +50,9 @@ for t in best_1NF_tables:
 print(normalforms.calculate_mml([table1, table2]))
 
 # Testing possible_partial_dependency function
-print(normalforms.possible_partial_dependency(table2, ["studentName", "age"], ["GPA", "studentNo"])) # Expected False
+table2 = best_1NF_tables[1]
+print(table2.primary_keys)
+print(normalforms.possible_partial_dependency(table2, ("studentName", "age"), ("GPA", "studentNo"))) # Expected False
 print(normalforms.possible_partial_dependency(table2, ["studentName"], ["GPA"])) # Expected True
 print(normalforms.possible_partial_dependency(table2, ["studentName"], ["GPA", "studentNo"])) # Expected False
 print(normalforms.possible_partial_dependency(table2, ["studentName", "age"], ["GPA"])) # Expected True
