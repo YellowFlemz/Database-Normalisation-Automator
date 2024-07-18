@@ -21,6 +21,23 @@ class Table:
     def get_key_column(self, key: str) -> List[Any]:
         key_index = self.keys.index(key)
         return [row[key_index] for row in self.rows]
+    
+    # Note: Do not pass in primary keys with asterisks (e.g. "studentNo*" should be passed as "studentNo")
+    def remove_key_column(self, key: str) -> None:
+        key_index = self.keys.index(key)
+        for row in self.rows:
+            del row[key_index]
+        self.keys.remove(key)
+        if key in self.primary_keys:
+            self.primary_keys.remove(key)
+            self.primary_key_count -= 1
+        if key in self.non_primary_keys:
+            self.non_primary_keys.remove(key)
+        if key in self.table_data[0]:
+            self.table_data[0].remove(key)
+        elif key + "*" in self.table_data[0]:
+            self.table_data[0].remove(key + "*")
+        self.key_count -= 1
 
     """Count the number of unique instances for each column."""
     def _count_unique_instances_per_column(self) -> List[int]:

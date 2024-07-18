@@ -21,6 +21,7 @@ def create_2NF_tables(tables: List[Table]):
     # The goal of this function is to take in a list of tables and return them in the best 2NF form according to MML
     # First, for each table, we need to see if there is any possible partial dependency between all sets of primary keys and non-primary keys
     for table in tables:
+        # TODO: if table has one p key, there are no partial dependencies. Figure out how to skip that table later
         dependencies = []
         p_key_subsets = util.get_all_combinations(table.primary_keys)
         n_key_subsets = util.get_all_combinations(table.non_primary_keys)
@@ -79,3 +80,32 @@ def possible_partial_dependency(table: Table, pkeys: List[Any]|Tuple[Any], nkeys
     pkeyset = set(zip(*pkeylist))
     combinedset = set(zip(*combinedlist))
     return len(pkeyset) == len(combinedset)
+
+'''
+    This function aims to effectively split a table into two, like would be done in 2NF.
+    e.g. assume a table like t = [
+    ["studentName", "age", "GPA", "studentNo"],
+    ["Maverick", 18, "2.5", 10393],
+    ["Ash", 17, "3.2", 20392],
+    ["Bobby", 19, "2.9", 12345],
+    ["Alex", 18, "4.2", 29392],
+    ["Alex", 18, "4.2", 19999]]
+    and we call split_table(t, ["studentName"], ["GPA"]).
+    The function should return two tables such as t1 = [
+    ["studentName", "age", "studentNo"],
+    ["Maverick", 18, 10393],
+    ["Ash", 17, 20392],
+    ["Bobby", 19, 12345],
+    ["Alex", 18, 29392],
+    ["Alex", 18, 19999]]
+    ] and t2 = [
+    ["studentName", "GPA"],
+    ["Maverick", "2.5"],
+    ["Ash", "3.2"],
+    ["Bobby", "2.9"],
+    ["Alex", "4.2"],
+    ["Alex", "4.2"]]
+    Note that this function assumes that calling possible_partial_dependency with the same arguments will return True.
+'''
+def split_table(table: Table, pkeys: List[Any]|Tuple[Any], nkeys: List[Any]|Tuple[Any]) -> Tuple[Table, Table]:
+    pass

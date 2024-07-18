@@ -57,5 +57,12 @@ print(normalforms.possible_partial_dependency(table2, ["studentName"], ["GPA"]))
 print(normalforms.possible_partial_dependency(table2, ["studentName"], ["GPA", "studentNo"])) # Expected False
 print(normalforms.possible_partial_dependency(table2, ["studentName", "age"], ["GPA"])) # Expected True
 
+# Test removing key column
+# table2.display_table()
+# table2.remove_key_column("GPA")
+# table2.display_table()
+# print(table2.primary_keys)
+# print(table2.non_primary_keys)
+
 # Testing create_2NF_tables function
 best_2NF_tables = normalforms.create_2NF_tables(best_1NF_tables)
