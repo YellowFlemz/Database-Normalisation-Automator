@@ -2,6 +2,7 @@ from table import Table
 from typing import List, Tuple, Any
 import codetotable as mml
 import util
+import copy
 
 def create_1NF_tables(tables: List[Table]) -> List[Table]:
     res = []
@@ -23,7 +24,7 @@ def create_2NF_tables(tables: List[Table]):
     for table in tables:
         # TODO: if table has one p key, there are no partial dependencies. Figure out how to skip that table later
         dependencies = []
-        p_key_subsets = util.get_all_combinations(table.primary_keys)
+        p_key_subsets = util.get_all_combinations_except_all(table.primary_keys)
         n_key_subsets = util.get_all_combinations(table.non_primary_keys)
         for p_key_subset in p_key_subsets:
             for n_key_subset in n_key_subsets:
@@ -107,5 +108,12 @@ def possible_partial_dependency(table: Table, pkeys: List[Any]|Tuple[Any], nkeys
     ["Alex", "4.2"]]
     Note that this function assumes that calling possible_partial_dependency with the same arguments will return True.
 '''
-def split_table(table: Table, pkeys: List[Any]|Tuple[Any], nkeys: List[Any]|Tuple[Any]) -> Tuple[Table, Table]:
-    pass
+def split_table(table: Table, pkeys: List[Any]|Tuple[Any], nkeys: List[Any]|Tuple[Any]):
+    tabledatacopy = copy.deepcopy(table.table_data)
+    first_table = Table(tabledatacopy)
+    for key in nkeys:
+        first_table.remove_key_column(key)
+    pkeylist = [[pkeys[i] + "*"] + table.get_key_column(pkeys[i]) for i in range(len(pkeys))]
+    nkeylist = [[nkeys[i]] + table.get_key_column(nkeys[i]) for i in range(len(nkeys))]
+    second_table = Table(util.transpose(pkeylist + nkeylist))
+    return (first_table, second_table)

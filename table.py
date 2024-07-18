@@ -38,6 +38,7 @@ class Table:
         elif key + "*" in self.table_data[0]:
             self.table_data[0].remove(key + "*")
         self.key_count -= 1
+        self.unique_counts = self._count_unique_instances_per_column()
 
     """Count the number of unique instances for each column."""
     def _count_unique_instances_per_column(self) -> List[int]:
@@ -94,3 +95,14 @@ class Table:
     def display_table(self) -> None:
         for row in self.table_data:
             print('\t'.join(map(str, row)))
+        
+    """Print out all class variables of self."""
+    def debug(self) -> None:
+        print(f"Table Data: {self.table_data}")
+        print(f"Keys: {self.keys}")
+        print(f"Key Count: {self.key_count}")
+        print(f"Primary Keys: {self.primary_keys}")
+        print(f"Non-Primary Keys: {self.non_primary_keys}")
+        print(f"Primary Key Count: {self.primary_key_count}")
+        print(f"Rows: {self.rows}")
+        print(f"Unique Counts: {self.unique_counts}")

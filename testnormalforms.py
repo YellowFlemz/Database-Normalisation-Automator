@@ -50,19 +50,27 @@ for t in best_1NF_tables:
 print(normalforms.calculate_mml([table1, table2]))
 
 # Testing possible_partial_dependency function
-table2 = best_1NF_tables[1]
-print(table2.primary_keys)
-print(normalforms.possible_partial_dependency(table2, ("studentName", "age"), ("GPA", "studentNo"))) # Expected False
-print(normalforms.possible_partial_dependency(table2, ["studentName"], ["GPA"])) # Expected True
-print(normalforms.possible_partial_dependency(table2, ["studentName"], ["GPA", "studentNo"])) # Expected False
-print(normalforms.possible_partial_dependency(table2, ["studentName", "age"], ["GPA"])) # Expected True
+# table2 = best_1NF_tables[1]
+# print(table2.primary_keys)
+# print(normalforms.possible_partial_dependency(table2, ("studentName", "age"), ("GPA", "studentNo"))) # Expected False
+# print(normalforms.possible_partial_dependency(table2, ["studentName"], ["GPA"])) # Expected True
+# print(normalforms.possible_partial_dependency(table2, ["studentName"], ["GPA", "studentNo"])) # Expected False
+# print(normalforms.possible_partial_dependency(table2, ["studentName", "age"], ["GPA"])) # Expected True
 
 # Test removing key column
-# table2.display_table()
-# table2.remove_key_column("GPA")
-# table2.display_table()
-# print(table2.primary_keys)
-# print(table2.non_primary_keys)
+# table1 = best_1NF_tables[0]
+# table1.display_table()
+# table1.remove_key_column("NAME")
+# table1.debug()
+
+# Test split_table function
+table1 = best_1NF_tables[0]
+print("Splitting table 1")
+table1.display_table()
+table1.debug()
+split_tables = normalforms.split_table(table1, ["EMPLOYEE_ID"], ["NAME", "STATE_CODE", "HOME_STATE"])
+for t in split_tables:
+    t.display_table()
 
 # Testing create_2NF_tables function
-best_2NF_tables = normalforms.create_2NF_tables(best_1NF_tables)
+# best_2NF_tables = normalforms.create_2NF_tables(best_1NF_tables)
