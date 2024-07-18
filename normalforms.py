@@ -108,12 +108,15 @@ def possible_partial_dependency(table: Table, pkeys: List[Any]|Tuple[Any], nkeys
     ["Alex", "4.2"]]
     Note that this function assumes that calling possible_partial_dependency with the same arguments will return True.
 '''
-def split_table(table: Table, pkeys: List[Any]|Tuple[Any], nkeys: List[Any]|Tuple[Any]):
+def split_table(table: Table, pkeys: List[Any]|Tuple[Any], nkeys: List[Any]|Tuple[Any]) -> Tuple[Table, Table]:
     tabledatacopy = copy.deepcopy(table.table_data)
+    # First table is created by simply removing the non-primary key columns (after deepcopying the original table data)
     first_table = Table(tabledatacopy)
     for key in nkeys:
         first_table.remove_key_column(key)
+    # Second table is created by retrieving the values of the primary and non-primary key columns, and creating a new table
     pkeylist = [[pkeys[i] + "*"] + table.get_key_column(pkeys[i]) for i in range(len(pkeys))]
     nkeylist = [[nkeys[i]] + table.get_key_column(nkeys[i]) for i in range(len(nkeys))]
+    # Table transposition is needed to get the correct table structure
     second_table = Table(util.transpose(pkeylist + nkeylist))
     return (first_table, second_table)
