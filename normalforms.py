@@ -37,7 +37,7 @@ def create_2NF_tables(tables: List[Table]) -> List[Table]:
         n_key_subsets = util.get_all_combinations(mainTable.non_primary_keys)
         for p_key_subset in p_key_subsets:
             for n_key_subset in n_key_subsets:
-                if possible_partial_dependency(mainTable, p_key_subset, n_key_subset):
+                if possible_dependency(mainTable, p_key_subset, n_key_subset):
                     a, b = split_table(mainTable, p_key_subset, n_key_subset)
                     recursive_split(a, otherTables + [b])
                     recursive_split(b, otherTables + [a])
@@ -54,7 +54,7 @@ def create_2NF_tables(tables: List[Table]) -> List[Table]:
         n_key_subsets = util.get_all_combinations(table.non_primary_keys)
         for p_key_subset in p_key_subsets:
             for n_key_subset in n_key_subsets:
-                if possible_partial_dependency(table, p_key_subset, n_key_subset):
+                if possible_dependency(table, p_key_subset, n_key_subset):
                     return False
         return True
 
@@ -79,6 +79,65 @@ def create_2NF_tables(tables: List[Table]) -> List[Table]:
         best_2nf_tables.append(best_table_combination)
 
     return util.flattenlist(best_2nf_tables)
+
+'''
+    This function will take in a list of tables and return the list of tables in the best 3NF form according to MML.
+'''
+def create_3NF_tables(tables: List[Table]) -> List[Table]:
+    possible_tables = []
+    '''
+    This function will recursively split a table into two tables using all possible transitive dependencies.
+    If the table cannot be split anymore, the tables will be added to the possible_tables list.
+    In essence this function will find all possible table combinations that can be created from the given table 
+    while following 3NF rules.
+    '''
+    def recursive_split(mainTable: Table, otherTables: List[Table] = []):
+        p_key_subsets = util.get_all_combinations_except_all(mainTable.primary_keys)
+        n_key_subsets = util.get_all_combinations(mainTable.non_primary_keys)
+        for p_key_subset in p_key_subsets:
+            for n_key_subset in n_key_subsets:
+                if possible_dependency(mainTable, p_key_subset, n_key_subset):
+                    a, b = split_table(mainTable, p_key_subset, n_key_subset)
+                    recursive_split(a, otherTables + [b])
+                    recursive_split(b, otherTables + [a])
+        # This ensures that the appended combination is in 2NF
+        if cannot_be_split_further(mainTable):
+            for table in otherTables:
+                if not cannot_be_split_further(table):
+                    break
+            else:
+                possible_tables.append([mainTable] + otherTables)
+    
+    def cannot_be_split_further(table: Table) -> bool:
+        p_key_subsets = util.get_all_combinations_except_all(table.primary_keys)
+        n_key_subsets = util.get_all_combinations(table.non_primary_keys)
+        for p_key_subset in p_key_subsets:
+            for n_key_subset in n_key_subsets:
+                if possible_dependency(table, p_key_subset, n_key_subset):
+                    return False
+        return True
+
+    # Stores all possible 3NF table combinations for each table in tables
+    all_table_list = []
+    for table in tables:
+        possible_tables = []
+        recursive_split(table)
+        all_table_list.append(possible_tables)
+    # Use below line to help debug
+    # return all_table_list
+
+    # For each table in tables, finds the best 2NF table combination according to MML. This uses the combinations we identified previously.
+    best_3nf_tables = []
+    for table_list in all_table_list:
+        best_mml = float('inf')
+        best_table_combination = []
+        for table_combination in table_list:
+            if calculate_mml(table_combination) < best_mml:
+                best_mml = calculate_mml(table_combination)
+                best_table_combination = table_combination
+        best_3nf_tables.append(best_table_combination)
+
+    return util.flattenlist(best_3nf_tables)
 
 # Function that takes as input a list of tables and returns the MML encoding value
 def calculate_mml(tables: List[Table]) -> float:
@@ -106,7 +165,7 @@ def calculate_mml(tables: List[Table]) -> float:
     return mml.I(tablecount, attributecount, tuplelist, datalist)
 
 '''
-    This function will return true if for each primary keyset, their respective non-primary keyset are the same.
+    This function will return true if for each key value in the first keyset, their respective key value in the second keyset are always the same in the table.
     e.g. assume a table like t = [
     ["studentName", "age", "GPA", "studentNo"],
     ["Maverick", 18, "2.5", 10393],
@@ -114,21 +173,21 @@ def calculate_mml(tables: List[Table]) -> float:
     ["Bobby", 19, "2.9", 12345],
     ["Alex", 18, "4.2", 29392],
     ["Alex", 18, "4.2", 19999]]
-    and we call is_partial_dependency(t, ["studentName"], ["GPA", "studentNo"]).
+    and we call possible_dependency(t, ["studentName"], ["GPA", "studentNo"]).
     This will return False because for the studentName entry Alex, there are two different GPA and studentNo pairs (4.2, 29392) and (4.2, 19999).
-    However for simply is_partial_dependency(t, ["studentName"], ["GPA"]), this will return True because for each studentName entry, the GPA is the same.
+    However if we call possible_dependency(t, ["studentName"], ["GPA"]), this will return True because for each studentName entry, the GPA is the same.
     '''
-def possible_partial_dependency(table: Table, pkeys: List[Any]|Tuple[Any], nkeys: List[Any]|Tuple[Any]) -> bool:
+def possible_dependency(table: Table, keyset1: List[Any]|Tuple[Any], keyset2: List[Any]|Tuple[Any]) -> bool:
     # Implementation idea:
-    # If we take the length of the set of the primary keyset and the combined keyset, and they are the same, 
-    # then we can say that the non-primary values always match their primary values (i.e. the primary key values don't conflict with their non-primary key values).
-    # In contrast, if the length of the combined keyset > primary keyset, then we can say that at least one of the primary keys has conflicting non-primary keys.
-    pkeylist = [table.get_key_column(pkeys[i]) for i in range(len(pkeys))]
-    nkeylist = [table.get_key_column(nkeys[i]) for i in range(len(nkeys))]
-    combinedlist = pkeylist + nkeylist
-    pkeyset = set(zip(*pkeylist))
-    combinedset = set(zip(*combinedlist))
-    return len(pkeyset) == len(combinedset)
+    # If we take the length of the set of the first keyset and the combined keyset, and they are the same, 
+    # then we can say that the second set values always match the first set values (i.e. the first set key values don't conflict with their second set key values).
+    # In contrast, if the length of the combined keyset > first keyset, then we can say that at least one of the first set keys has conflicting second set keys.
+    keylist1 = [table.get_key_column(keyset1[i]) for i in range(len(keyset1))]
+    keylist2 = [table.get_key_column(keyset2[i]) for i in range(len(keyset2))]
+    combinedlist = keylist1 + keylist2
+    solezipset = set(zip(*keylist1))
+    combinedzipset = set(zip(*combinedlist))
+    return len(solezipset) == len(combinedzipset)
 
 '''
     This function aims to effectively split a table into two, like would be done in 2NF.
@@ -154,7 +213,7 @@ def possible_partial_dependency(table: Table, pkeys: List[Any]|Tuple[Any], nkeys
     ["Bobby", "2.9"],
     ["Alex", "4.2"],
     ["Alex", "4.2"]]
-    Note that this function assumes that calling possible_partial_dependency with the same arguments will return True.
+    Note that this function assumes that calling possible_dependency with the same arguments will return True.
 '''
 def split_table(table: Table, pkeys: List[Any]|Tuple[Any], nkeys: List[Any]|Tuple[Any]) -> Tuple[Table, Table]:
     tabledatacopy = copy.deepcopy(table.table_data)
