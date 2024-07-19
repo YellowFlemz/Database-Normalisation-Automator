@@ -4,6 +4,9 @@ import codetotable as mml
 import util
 import copy
 
+'''
+    This function will take in a list of tables and return the list of tables in the best 1NF form according to MML.
+'''
 def create_1NF_tables(tables: List[Table]) -> List[Table]:
     res = []
     for table in tables:
@@ -17,20 +20,51 @@ def create_1NF_tables(tables: List[Table]) -> List[Table]:
         res.append(Table(new_table_data))
     return res
 
+'''
+    This function will take in a list of tables and return the list of tables in the best 2NF form according to MML.
+'''
 def create_2NF_tables(tables: List[Table]):
-    # Rearrange tables into all possible 2NF structures
-    # The goal of this function is to take in a list of tables and return them in the best 2NF form according to MML
-    # First, for each table, we need to see if there is any possible partial dependency between all sets of primary keys and non-primary keys
-    for table in tables:
-        # TODO: if table has one p key, there are no partial dependencies. Figure out how to skip that table later
-        dependencies = []
-        p_key_subsets = util.get_all_combinations_except_all(table.primary_keys)
-        n_key_subsets = util.get_all_combinations(table.non_primary_keys)
+    
+    possible_tables = []
+    '''
+    This function will recursively split a table into two tables using all possible partial dependencies.
+    If the table cannot be split anymore, the tables will be added to the possible_tables list.
+    In essence this function will find all possible table combinations that can be created from the given table 
+    while following 2NF rules.
+    '''
+    def recursive_split(mainTable: Table, otherTables: List[Table] = []):
+        p_key_subsets = util.get_all_combinations_except_all(mainTable.primary_keys)
+        n_key_subsets = util.get_all_combinations(mainTable.non_primary_keys)
+        split_flag = False
         for p_key_subset in p_key_subsets:
             for n_key_subset in n_key_subsets:
-                if possible_partial_dependency(table, p_key_subset, n_key_subset):
-                    dependencies.append((p_key_subset, "-->", n_key_subset))
-        print(dependencies)
+                if possible_partial_dependency(mainTable, p_key_subset, n_key_subset):
+                    split_flag = True
+                    a, b = split_table(mainTable, p_key_subset, n_key_subset)
+                    recursive_split(a, otherTables + [b])
+                    recursive_split(b, otherTables + [a])
+        if not split_flag:
+            possible_tables.append([mainTable] + otherTables)
+
+    # Stores all possible 2NF table combinations for each table in tables
+    all_table_list = []
+    for table in tables:
+        possible_tables = []
+        recursive_split(table)
+        all_table_list.append(possible_tables)
+    
+    # For each table in tables, finds the best 2NF table combination according to MML. This uses the combinations we identified previously.
+    best_2nf_tables = []
+    for table_list in all_table_list:
+        best_mml = float('inf')
+        best_table_combination = []
+        for table_combination in table_list:
+            if calculate_mml(table_combination) < best_mml:
+                best_mml = calculate_mml(table_combination)
+                best_table_combination = table_combination
+        best_2nf_tables.append(best_table_combination)
+
+    return best_2nf_tables
 
 # Function that takes as input a list of tables and returns the MML encoding value
 def calculate_mml(tables: List[Table]) -> float:

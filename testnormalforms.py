@@ -64,13 +64,19 @@ print(normalforms.calculate_mml([table1, table2]))
 # table1.debug()
 
 # Test split_table function
-table1 = best_1NF_tables[0]
-print("Splitting table 1")
-table1.display_table()
-table1.debug()
-split_tables = normalforms.split_table(table1, ["EMPLOYEE_ID"], ["NAME", "STATE_CODE", "HOME_STATE"])
-for t in split_tables:
-    t.display_table()
+# table1 = best_1NF_tables[0]
+# print("Splitting table 1")
+# table1.display_table()
+# table1.debug()
+# split_tables = normalforms.split_table(table1, ["EMPLOYEE_ID"], ["NAME", "STATE_CODE", "HOME_STATE"])
+# for t in split_tables:
+#     t.display_table()
 
 # Testing create_2NF_tables function
-# best_2NF_tables = normalforms.create_2NF_tables(best_1NF_tables)
+best_2NF_tables = normalforms.create_2NF_tables(best_1NF_tables)
+print(best_2NF_tables)
+for l in best_2NF_tables:
+    print("\nMML Value of Table Set: " + str(normalforms.calculate_mml(l)))
+    for t in l:
+        t.display_table()
+        
