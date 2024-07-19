@@ -1,5 +1,6 @@
 import normalforms
 from table import Table
+from typing import List, Tuple, Any
 
 # Create sample tables
 table_data = [
@@ -8,7 +9,7 @@ table_data = [
     [1, "Alice", 2, "Waiter", 26, "Michigan"],
     [2, "Charlie", 2, "Waiter", 56, "Wyoming"],
     [2, "Charlie", 3, "Bartender", 56, "Wyoming"],
-    [3, "Alice", 1, "Chef", 56, "Wyoming"],
+    [3, "Alice", 1, "Chef", 56, "Wyoming"]
 ]
 
 table_data2 = [
@@ -74,9 +75,16 @@ print(normalforms.calculate_mml([table1, table2]))
 
 # Testing create_2NF_tables function
 best_2NF_tables = normalforms.create_2NF_tables(best_1NF_tables)
-print(best_2NF_tables)
-for l in best_2NF_tables:
-    print("\nMML Value of Table Set: " + str(normalforms.calculate_mml(l)))
-    for t in l:
-        t.display_table()
-        
+for t in best_2NF_tables:
+    print("\nMML Value of Table: " + str(normalforms.calculate_mml([t])))
+    t.display_table()
+
+# --- If you want to debug all found 2NF combinations, uncomment this and and uncomment return all table list line in the 2NF function ---
+# debugging_best_2NF_tables = normalforms.create_2NF_tables(best_1NF_tables)
+# print(debugging_best_2NF_tables)
+# for table_list in debugging_best_2NF_tables:
+#     for table_comb in table_list:
+#         print("------------------------")
+#         print(normalforms.calculate_mml(table_comb))
+#         for table in table_comb:
+#             table.display_table()
