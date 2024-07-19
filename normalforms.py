@@ -67,7 +67,7 @@ def create_2NF_tables(tables: List[Table]) -> List[Table]:
     # Use below line to help debug
     # return all_table_list
 
-    # For each table in tables, finds the best 2NF table combination according to MML. This uses the combinations we identified previously.
+    # For each table in tables, finds the best 2NF table combination according to MML. This uses the combinations identified previously.
     best_2nf_tables = []
     for table_list in all_table_list:
         best_mml = float('inf')
@@ -92,29 +92,32 @@ def create_3NF_tables(tables: List[Table]) -> List[Table]:
     while following 3NF rules.
     '''
     def recursive_split(mainTable: Table, otherTables: List[Table] = []):
-        p_key_subsets = util.get_all_combinations_except_all(mainTable.primary_keys)
-        n_key_subsets = util.get_all_combinations(mainTable.non_primary_keys)
-        for p_key_subset in p_key_subsets:
-            for n_key_subset in n_key_subsets:
-                if possible_dependency(mainTable, p_key_subset, n_key_subset):
-                    a, b = split_table(mainTable, p_key_subset, n_key_subset)
+        n_key_subsets = util.get_all_combinations_except_all(mainTable.non_primary_keys)
+        for subset1 in n_key_subsets:
+            for subset2 in n_key_subsets:
+                # Skip checking for dependencies if the chosen keysets have any intersecting values (keys cannot exist in both sets)
+                if len(set(subset1).intersection(set(subset2))) > 0:
+                    continue
+                if possible_dependency(mainTable, subset1, subset2):
+                    a, b = split_table(mainTable, subset1, subset2)
                     recursive_split(a, otherTables + [b])
                     recursive_split(b, otherTables + [a])
-        # This ensures that the appended combination is in 2NF
+        # This ensures that the appended combination is in 3NF
         if cannot_be_split_further(mainTable):
             for table in otherTables:
                 if not cannot_be_split_further(table):
                     break
             else:
                 possible_tables.append([mainTable] + otherTables)
-    
+
     def cannot_be_split_further(table: Table) -> bool:
-        p_key_subsets = util.get_all_combinations_except_all(table.primary_keys)
-        n_key_subsets = util.get_all_combinations(table.non_primary_keys)
-        for p_key_subset in p_key_subsets:
-            for n_key_subset in n_key_subsets:
-                if possible_dependency(table, p_key_subset, n_key_subset):
-                    return False
+        n_key_subsets = util.get_all_combinations_except_all(table.non_primary_keys)
+        for subset1 in n_key_subsets:
+            for subset2 in n_key_subsets:
+                if len(set(subset1).intersection(set(subset2))) > 0:
+                    continue
+                if possible_dependency(table, subset1, subset2):
+                    return False    
         return True
 
     # Stores all possible 3NF table combinations for each table in tables
@@ -126,7 +129,7 @@ def create_3NF_tables(tables: List[Table]) -> List[Table]:
     # Use below line to help debug
     # return all_table_list
 
-    # For each table in tables, finds the best 2NF table combination according to MML. This uses the combinations we identified previously.
+    # For each table in tables, finds the best 3NF table combination according to MML. This uses the combinations identified previously.
     best_3nf_tables = []
     for table_list in all_table_list:
         best_mml = float('inf')
@@ -141,6 +144,8 @@ def create_3NF_tables(tables: List[Table]) -> List[Table]:
 
 # Function that takes as input a list of tables and returns the MML encoding value
 def calculate_mml(tables: List[Table]) -> float:
+    if len(tables) == 0 or tables == [[]]:
+        return None
     # Calculate tabletotal
     tablecount = len(tables)
     # Holds atpttuples
@@ -190,7 +195,7 @@ def possible_dependency(table: Table, keyset1: List[Any]|Tuple[Any], keyset2: Li
     return len(solezipset) == len(combinedzipset)
 
 '''
-    This function aims to effectively split a table into two, like would be done in 2NF.
+    This function aims to effectively split a table into two, like would be done in 2NF/3NF.
     e.g. assume a table like t = [
     ["studentName", "age", "GPA", "studentNo"],
     ["Maverick", 18, "2.5", 10393],
