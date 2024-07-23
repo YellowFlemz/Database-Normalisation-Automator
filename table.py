@@ -92,11 +92,10 @@ class Table:
     Calculate MML for all valid primary key combinations and return the one with the shortest MML.
     """
     def calculate_best_primary_keys(self) -> Tuple[Tuple[str, ...], float]:
-        valid_combinations = self.get_valid_primary_key_combinations()
         best_combination = None
         best_mml = float('inf')
         
-        for comb in valid_combinations:
+        for comb in self.candidate_keys:
             # Calculates the MML value for the current combination
             mml_value = mml.I(1, self.key_count, [(self.key_count, len(comb))], [(len(self.rows), self.unique_counts)])
             # Break MML tiebreaks with the lowest number of attributes in primary key
