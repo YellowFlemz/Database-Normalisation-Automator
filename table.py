@@ -24,11 +24,15 @@ class Table:
         self.prime_attributes = self.calculate_prime_attributes()
         self.non_prime_attributes = self.calculate_non_prime_attributes()
 
+    """Get all values of a key in the table."""
     def get_key_column(self, key: str) -> List[Any]:
         key_index = self.keys.index(key)
         return [row[key_index] for row in self.rows]
     
-    # Note: Do not pass in primary keys with asterisks (e.g. "studentNo*" should be passed as "studentNo")
+    """
+    Remove a key and its corresponding values from the table.
+    Note: Do not pass in primary keys with asterisks (e.g. "studentNo*" should be passed as "studentNo")
+    """
     def remove_key_column(self, key: str) -> None:
         key_index = self.keys.index(key)
         for row in self.rows:
@@ -105,17 +109,24 @@ class Table:
         
         return best_combination, best_mml
 
+    """
+    Calculate all possible candidate keys for the table.
+    """
     def calculate_candidate_keys(self) -> List[Tuple[str, ...]]:
         valid_combinations = self.get_valid_primary_key_combinations()
         candidate_keys = []
         for i in valid_combinations:
             for j in valid_combinations:
+                # If there is another combination which is a proper subset of the current combination, then it cannot be a candidate key
                 if set(j).issubset(set(i)) and set(i) != set(j):
                     break
             else:
                 candidate_keys.append(i)
         return candidate_keys
 
+    """
+    Calculate all prime attributes for the table.
+    """
     def calculate_prime_attributes(self) -> List[str]:
         prime_attribute_set = set()
         for tup in self.candidate_keys:
@@ -123,6 +134,9 @@ class Table:
                 prime_attribute_set.add(key)
         return list(prime_attribute_set)
     
+    """
+    Calculate all non-prime attributes for the table.
+    """
     def calculate_non_prime_attributes(self) -> List[str]:
         prime_attribute_set = set()
         for tup in self.candidate_keys:
@@ -131,8 +145,8 @@ class Table:
         # Symmetric difference of all keys and prime attributes
         return list(set(self.keys) - prime_attribute_set)
     
-    """Return a completely new table with the same table data but with no primary keys"""
-    def return_stripped_table(self) -> 'Table':
+    """Return a completely new table with the same table data but with no primary keys."""
+    def return_stripped_table(self) -> Table:
         new_table_data = [self.keys] + self.rows
         return Table(new_table_data)
         
