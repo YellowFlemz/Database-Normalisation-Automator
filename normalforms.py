@@ -34,7 +34,7 @@ def create_2NF_tables(tables: List[Table]) -> List[Table]:
     '''
     def recursive_split(mainTable: Table, otherTables: List[Table] = []):
         p_key_subsets = util.get_all_combinations_except_all(mainTable.primary_keys)
-        n_key_subsets = util.get_all_combinations(mainTable.non_primary_keys)
+        n_key_subsets = util.get_all_combinations(mainTable.non_prime_attributes)
         for p_key_subset in p_key_subsets:
             for n_key_subset in n_key_subsets:
                 if possible_dependency(mainTable, p_key_subset, n_key_subset):
@@ -51,7 +51,7 @@ def create_2NF_tables(tables: List[Table]) -> List[Table]:
     
     def cannot_be_split_further(table: Table) -> bool:
         p_key_subsets = util.get_all_combinations_except_all(table.primary_keys)
-        n_key_subsets = util.get_all_combinations(table.non_primary_keys)
+        n_key_subsets = util.get_all_combinations(table.non_prime_attributes)
         for p_key_subset in p_key_subsets:
             for n_key_subset in n_key_subsets:
                 if possible_dependency(table, p_key_subset, n_key_subset):

@@ -31,7 +31,7 @@ table_data3 = [
 ]
 
 # -----------------------   Tables to test go below   -----------------------
-input_tables = [table_data2]
+input_tables = [table_data1]
 
 print("\n ------- 0NF Table(s) -------\n")
 testingtables = []
