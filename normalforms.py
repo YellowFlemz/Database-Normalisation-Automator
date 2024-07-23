@@ -210,15 +210,17 @@ def possible_dependency(table: Table, keyset1: List[Any]|Tuple[Any], keyset2: Li
     ["Ash", 17, 20392],
     ["Bobby", 19, 12345],
     ["Alex", 18, 29392],
-    ["Alex", 18, 19999]]
-    ] and t2 = [
+    ["Alex", 18, 19999]] 
+    and t2 = [
     ["studentName", "GPA"],
     ["Maverick", "2.5"],
     ["Ash", "3.2"],
     ["Bobby", "2.9"],
     ["Alex", "4.2"],
-    ["Alex", "4.2"]]
-    Note that this function assumes that calling possible_dependency with the same arguments will return True.
+    ["Alex", "4.2"]
+    ]
+    Note that this function assumes that calling possible_dependency with the same arguments will return True. 
+    If this is not the case, the resulting tables may contain anomalies.
 '''
 def split_table(table: Table, pkeys: List[Any]|Tuple[Any], nkeys: List[Any]|Tuple[Any]) -> Tuple[Table, Table]:
     tabledatacopy = copy.deepcopy(table.table_data)

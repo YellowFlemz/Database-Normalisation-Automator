@@ -1,3 +1,4 @@
+from __future__ import annotations
 import math
 from itertools import combinations
 from typing import List, Tuple, Any
@@ -130,7 +131,12 @@ class Table:
                 prime_attribute_set.add(key)
         # Symmetric difference of all keys and prime attributes
         return list(set(self.keys) - prime_attribute_set)
-
+    
+    """Return a completely new table with the same table data but with no primary keys"""
+    def return_stripped_table(self) -> 'Table':
+        new_table_data = [self.keys] + self.rows
+        return Table(new_table_data)
+        
     """Display the table."""
     def display_table(self) -> None:
         for row in self.table_data:

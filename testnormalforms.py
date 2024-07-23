@@ -4,7 +4,7 @@ from typing import List, Tuple, Any
 import util
 
 # Create sample tables
-table_data = [
+table_data1 = [
     ["EMPLOYEE_ID", "NAME", "JOB_CODE", "JOB", "STATE_CODE", "HOME_STATE"],
     [1, "Alice", 1, "Chef", 26, "Michigan"],
     [1, "Alice", 2, "Waiter", 26, "Michigan"],
@@ -26,6 +26,8 @@ table_data3 = [
     [308, "07-Jun-2019", "12-Jun-2019", "Wednesday"],
     [507, "14-May-2019", "17-May-2019", "Friday"],
     [221, "18-Jun-2019", "20-Jun-2019", "Thursday"],
+    [308, "18-Jun-2019", "20-Jun-2019", "Thursday"],
+    [308, "21-Jun-2019", "27-Jun-2019", "Thursday"]
 ]
 
 # -----------------------   Tables to test go below   -----------------------
@@ -59,7 +61,7 @@ for t in input_tables:
 
 # Create and display the new 1NF table
 best_1NF_tables = normalforms.create_1NF_tables(testingtables)
-print("\n ------- Best 1NF Table(s) -------")
+print("------- Best 1NF Table(s) -------")
 for t in best_1NF_tables:
     print("\nMML Value of Table: " + str(normalforms.calculate_mml([t])))
     t.display_table()
