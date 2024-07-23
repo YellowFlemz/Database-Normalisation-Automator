@@ -62,8 +62,16 @@ def create_2NF_tables(tables: List[Table]) -> List[Table]:
     all_table_list = []
     for table in tables:
         possible_tables = []
-        recursive_split(table)
+        # Run recursive_split() on all candidate keys of the table
+        candidate_tables = all_candidate_tables(table)
+        for t in candidate_tables:
+            recursive_split(t)
         all_table_list.append(possible_tables)
+        # Guarantees 2NF even if its MML value is worse than 1NF
+        if len(possible_tables) > len(candidate_tables):
+            for comb in possible_tables:
+                if len(comb) == 1:
+                    possible_tables.remove(comb)
     # Use below line to help debug
     # return all_table_list
 
@@ -234,3 +242,16 @@ def split_table(table: Table, pkeys: List[Any]|Tuple[Any], nkeys: List[Any]|Tupl
     # Table transposition is needed to get the correct table structure
     second_table = Table(util.transpose(pkeylist + nkeylist))
     return (first_table, second_table)
+
+'''
+Given a table, returns a List of tables using all possible candidate keys of the table.
+'''
+def all_candidate_tables(table: Table) -> List[Table]:
+    res = []
+    for tup in table.candidate_keys:
+        keys = copy.deepcopy(table.keys)
+        for i in range(len(keys)):
+            if keys[i] in tup:
+                keys[i] = keys[i] + "*"
+        res.append(Table([keys] + table.rows))
+    return res

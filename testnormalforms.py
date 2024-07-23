@@ -31,7 +31,7 @@ table_data3 = [
 ]
 
 # -----------------------   Tables to test go below   -----------------------
-input_tables = [table_data3]
+input_tables = [table_data2]
 
 print("\n ------- 0NF Table(s) -------\n")
 testingtables = []
@@ -99,14 +99,13 @@ print("\nMML Value of All Table(s): " + str(normalforms.calculate_mml(best_2NF_t
 
 # Testing create_3NF_tables function
 best_3NF_tables = normalforms.create_3NF_tables(best_2NF_tables)
-#print(best_3NF_tables)
 print("\n ------- Best 3NF Table(s) -------")
 for t in best_3NF_tables:
     print("\nMML Value of Table: " + str(normalforms.calculate_mml([t])))
     t.display_table()
 print("\nMML Value of All Table(s): " + str(normalforms.calculate_mml(best_3NF_tables)))
 
-# --- If you want to debug all found 2NF combinations, uncomment this and and uncomment return all table list line in the 2NF function ---
+# --- If you want to debug all found 2NF combinations, uncomment below and uncomment return all table list line in the 2NF function ---
 # debugging_best_2NF_tables = normalforms.create_2NF_tables(best_1NF_tables)
 # print(debugging_best_2NF_tables)
 # for table_list in debugging_best_2NF_tables:
