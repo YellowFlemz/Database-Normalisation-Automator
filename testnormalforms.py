@@ -20,15 +20,23 @@ table_data2 = [
     ["Alex", 18, "4.2", 29392],
     ["Alex", 18, "4.2", 19999]
 ]
+table_data3 = [
+    ["Locker_ID", "Reservation_Start_Date", "Reservation_End_Date", "Reservation_End_Day"],
+    [221, "14-May-2019", "12-Jun-2019", "Wednesday"],
+    [308, "07-Jun-2019", "12-Jun-2019", "Wednesday"],
+    [507, "14-May-2019", "17-May-2019", "Friday"],
+    [221, "18-Jun-2019", "20-Jun-2019", "Thursday"],
+]
 
 # -----------------------   Tables to test go below   -----------------------
-input_tables = [table_data, table_data2]
+input_tables = [table_data3]
 
 print("\n ------- 0NF Table(s) -------\n")
 testingtables = []
 for t in input_tables:
     temp = Table(t)
     temp.display_table()
+    #temp.debug()
     testingtables.append(temp)
     print("\n")
 
