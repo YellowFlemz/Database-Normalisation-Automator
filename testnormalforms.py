@@ -4,7 +4,6 @@ from typing import List, Tuple, Any
 import util
 
 # Create sample tables
-print("\n ------- 0NF Table(s) -------\n")
 table_data = [
     ["EMPLOYEE_ID", "NAME", "JOB_CODE", "JOB", "STATE_CODE", "HOME_STATE"],
     [1, "Alice", 1, "Chef", 26, "Michigan"],
@@ -22,11 +21,16 @@ table_data2 = [
     ["Alex", 18, "4.2", 19999]
 ]
 
-table1 = Table(table_data)
-table1.display_table()
-print("\n")
-table2 = Table(table_data2)
-table2.display_table()
+# -----------------------   Tables to test go below   -----------------------
+input_tables = [table_data, table_data2]
+
+print("\n ------- 0NF Table(s) -------\n")
+testingtables = []
+for t in input_tables:
+    temp = Table(t)
+    temp.display_table()
+    testingtables.append(temp)
+    print("\n")
 
 # valid_primary_key_combinations1 = table1.get_valid_primary_key_combinations()
 # valid_primary_key_combinations2 = table2.get_valid_primary_key_combinations()
@@ -46,7 +50,7 @@ table2.display_table()
 # print(f"Best combination for primary key: {best_combination} with MML: {best_mml}")
 
 # Create and display the new 1NF table
-best_1NF_tables = normalforms.create_1NF_tables([table1, table2])
+best_1NF_tables = normalforms.create_1NF_tables(testingtables)
 print("\n ------- Best 1NF Table(s) -------")
 for t in best_1NF_tables:
     print("\nMML Value of Table: " + str(normalforms.calculate_mml([t])))

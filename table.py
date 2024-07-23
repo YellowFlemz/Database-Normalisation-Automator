@@ -19,6 +19,9 @@ class Table:
         # Important: Automatically removes duplicate rows upon initialisation
         self.remove_duplicate_rows()
         self.unique_counts = self._count_unique_instances_per_column()
+        self.candidate_keys = self.calculate_candidate_keys()
+        self.prime_attributes = self.calculate_prime_attributes()
+        self.non_prime_attributes = self.calculate_non_prime_attributes()
 
     def get_key_column(self, key: str) -> List[Any]:
         key_index = self.keys.index(key)
@@ -40,7 +43,11 @@ class Table:
         elif key + "*" in self.table_data[0]:
             self.table_data[0].remove(key + "*")
         self.key_count -= 1
+        self.remove_duplicate_rows()
         self.unique_counts = self._count_unique_instances_per_column()
+        self.candidate_keys = self.calculate_candidate_keys()
+        self.prime_attributes = self.calculate_prime_attributes()
+        self.non_prime_attributes = self.calculate_non_prime_attributes()
     
     """Remove any duplicate rows."""
     def remove_duplicate_rows(self) -> None:
@@ -98,6 +105,32 @@ class Table:
         
         return best_combination, best_mml
 
+    def calculate_candidate_keys(self) -> List[Tuple[str, ...]]:
+        valid_combinations = self.get_valid_primary_key_combinations()
+        candidate_keys = []
+        for i in valid_combinations:
+            for j in valid_combinations:
+                if set(j).issubset(set(i)) and set(i) != set(j):
+                    break
+            else:
+                candidate_keys.append(i)
+        return candidate_keys
+
+    def calculate_prime_attributes(self) -> List[str]:
+        prime_attribute_set = set()
+        for tup in self.candidate_keys:
+            for key in tup:
+                prime_attribute_set.add(key)
+        return list(prime_attribute_set)
+    
+    def calculate_non_prime_attributes(self) -> List[str]:
+        prime_attribute_set = set()
+        for tup in self.candidate_keys:
+            for key in tup:
+                prime_attribute_set.add(key)
+        # Symmetric difference of all keys and prime attributes
+        return list(set(self.keys) - prime_attribute_set)
+
     """Display the table."""
     def display_table(self) -> None:
         for row in self.table_data:
@@ -113,3 +146,6 @@ class Table:
         print(f"Primary Key Count: {self.primary_key_count}")
         print(f"Rows: {self.rows}")
         print(f"Unique Counts: {self.unique_counts}")
+        print(f"Candidate Keys: {self.candidate_keys}")
+        print(f"Prime Attributes: {self.prime_attributes}")
+        print(f"Non-Prime Attributes: {self.non_prime_attributes}")
