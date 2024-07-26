@@ -167,6 +167,79 @@ def create_3NF_tables(tables: List[Table]) -> List[Table]:
 
     return util.flattenlist(best_3nf_tables)
 
+'''
+    This function will take in a list of tables and return the list of tables in the best BCNF form according to MML.
+    Working definition of BCNF:
+    - For every non-trivial functional dependency X -> Y, X is a superkey. 
+'''
+def create_BCNF_tables(tables: List[Table]) -> List[Table]:
+    possible_tables = []
+    '''
+    This function will essentially do the same as 3NF but also looks for functional dependencies
+    with prime attributes.
+    '''
+    def recursive_split(mainTable: Table, otherTables: List[Table] = []):
+        primary_key_subsets = util.get_all_combinations_except_all(mainTable.primary_keys)
+        prime_key_subsets = util.get_all_combinations(mainTable.prime_attributes)
+        for primary_key_subset in primary_key_subsets:
+            for prime_key_subset in prime_key_subsets:
+                # Skip the iteration if there are any common attributes in the two subsets
+                if len(set(primary_key_subset).intersection(set(prime_key_subset))) > 0:
+                    continue
+                if possible_dependency(mainTable, primary_key_subset, prime_key_subset):
+                    a, b = split_table(mainTable, primary_key_subset, prime_key_subset)
+                    recursive_split(a, otherTables + [b])
+                    recursive_split(b, otherTables + [a])
+        # This ensures that the appended combination is in BCNF
+        if cannot_be_split_further(mainTable):
+            for table in otherTables:
+                if not cannot_be_split_further(table):
+                    break
+            else:
+                possible_tables.append([mainTable] + otherTables)
+
+    def cannot_be_split_further(table: Table) -> bool:
+        primary_key_subsets = util.get_all_combinations_except_all(table.primary_keys)
+        prime_key_subsets = util.get_all_combinations(table.prime_attributes)
+        for primary_key_subset in primary_key_subsets:
+            for prime_key_subset in prime_key_subsets:
+                # Skip the iteration if there are any common attributes in the two subsets
+                if len(set(primary_key_subset).intersection(set(prime_key_subset))) > 0:
+                    continue
+                if possible_dependency(table, primary_key_subset, prime_key_subset):
+                    return False
+        return True
+
+    # Stores all possible BCNF table combinations for each table in tables
+    all_table_list = []
+    for table in tables:
+        possible_tables = []
+        # Run recursive_split() on all candidate keys of the table
+        candidate_tables = all_candidate_tables(table)
+        for t in candidate_tables:
+            recursive_split(t)
+        # Guarantees BCNF even if its MML value is worse than 3NF
+        # Checks to see if there have been any splitting of tables; if so, remove all unsplit tables
+        if max(len(comb) for comb in possible_tables) > 1:
+            for comb in possible_tables:
+                possible_tables = [comb for comb in possible_tables if len(comb) > 1]
+        all_table_list.append(possible_tables)
+    # Use below line to help debug
+    # return all_table_list
+
+    # For each table in tables, finds the best BCNF table combination according to MML. This uses the combinations identified previously.
+    best_bcnf_tables = []
+    for table_list in all_table_list:
+        best_mml = float('inf')
+        best_table_combination = []
+        for table_combination in table_list:
+            if calculate_mml(table_combination) < best_mml:
+                best_mml = calculate_mml(table_combination)
+                best_table_combination = table_combination
+        best_bcnf_tables.append(best_table_combination)
+
+    return util.flattenlist(best_bcnf_tables)
+
 # Function that takes as input a list of tables and returns the MML encoding value
 def calculate_mml(tables: List[Table]) -> float:
     if len(tables) == 0 or tables == [[]]:

@@ -10,7 +10,8 @@ table_data1 = [
     [1, "Alice", 2, "Waiter", 26, "Michigan"],
     [2, "Charlie", 2, "Waiter", 56, "Wyoming"],
     [2, "Charlie", 3, "Bartender", 56, "Wyoming"],
-    [3, "Alice", 1, "Chef", 56, "Wyoming"]
+    [3, "Alice", 1, "Chef", 56, "Wyoming"],
+    [4, "Bob", 1, "Chef", 26, "Michigan"]
 ]
 table_data2 = [
     ["studentName", "age", "GPA", "studentNo"],
@@ -34,7 +35,7 @@ table_data3 = [
 ]
 
 # -----------------------   Tables to test go below   -----------------------
-input_tables = [table_data3]
+input_tables = [table_data1]
 
 print("\n ------- 0NF Table(s) -------\n")
 testingtables = []
@@ -108,6 +109,14 @@ for t in best_3NF_tables:
     print("\nMML Value of Table: " + str(normalforms.calculate_mml([t])))
     t.display_table()
 print("\nMML Value of All Table(s): " + str(normalforms.calculate_mml(best_3NF_tables)))
+
+# Testing create_BCNF_tables function
+best_BCNF_tables = normalforms.create_BCNF_tables(best_3NF_tables)
+print("\n ------- Best BCNF Table(s) -------")
+for t in best_BCNF_tables:
+    print("\nMML Value of Table: " + str(normalforms.calculate_mml([t])))
+    t.display_table()
+print("\nMML Value of All Table(s): " + str(normalforms.calculate_mml(best_BCNF_tables)))
 
 # --- If you want to debug all found 2NF combinations, uncomment below and uncomment return all table list line in the 2NF function ---
 # debugging_best_2NF_tables = normalforms.create_2NF_tables(best_1NF_tables)
