@@ -14,11 +14,14 @@ table_data1 = [
 ]
 table_data2 = [
     ["studentName", "age", "GPA", "studentNo"],
-    ["Maverick", 18, "2.5", 10393],
-    ["Ash", 17, "3.2", 20392],
-    ["Bobby", 19, "2.9", 12345],
-    ["Alex", 18, "4.2", 29392],
-    ["Alex", 18, "4.2", 19999]
+    ["Maverick", 18, 2.5, 10393],
+    ["Ash", 19, 3.3, 20392],
+    ["Bobby", 19, 2.9, 12345],
+    ["Alex", 18, 4.2, 29392],
+    ["Alex", 18, 4.2, 19999],
+    ["Maverick", 19, 4.2, 19998],
+    ["Maverick", 19, 3.3, 10000],
+    ["Bobby", 20, 2.9, 19392]
 ]
 table_data3 = [
     ["Locker_ID", "Reservation_Start_Date", "Reservation_End_Date", "Reservation_End_Day"],
@@ -31,7 +34,7 @@ table_data3 = [
 ]
 
 # -----------------------   Tables to test go below   -----------------------
-input_tables = [table_data1]
+input_tables = [table_data3]
 
 print("\n ------- 0NF Table(s) -------\n")
 testingtables = []
@@ -66,7 +69,7 @@ for t in best_1NF_tables:
     print("\nMML Value of Table: " + str(normalforms.calculate_mml([t])))
     t.display_table()
 print("\nMML Value of All Table(s): " + str(normalforms.calculate_mml(best_1NF_tables)))
-best_1NF_tables[0].debug()
+
 # Testing possible_partial_dependency function
 # table2 = best_1NF_tables[1]
 # print(table2.primary_keys)
@@ -110,6 +113,16 @@ print("\nMML Value of All Table(s): " + str(normalforms.calculate_mml(best_3NF_t
 # debugging_best_2NF_tables = normalforms.create_2NF_tables(best_1NF_tables)
 # print(debugging_best_2NF_tables)
 # for table_list in debugging_best_2NF_tables:
+#     for table_comb in table_list:
+#         print("------------------------")
+#         print(normalforms.calculate_mml(table_comb))
+#         for table in table_comb:
+#             table.display_table()
+
+# --- If you want to debug all found 3NF combinations, uncomment below and uncomment return all table list line in the 2NF function ---
+# debugging_best_3NF_tables = normalforms.create_3NF_tables(best_2NF_tables)
+# print(debugging_best_3NF_tables)
+# for table_list in debugging_best_3NF_tables:
 #     for table_comb in table_list:
 #         print("------------------------")
 #         print(normalforms.calculate_mml(table_comb))

@@ -6,6 +6,9 @@ import copy
 
 '''
     This function will take in a list of tables and return the list of tables in the best 1NF form according to MML.
+    Working definition of 1NF:
+    - There must be a primary key.
+    - There are no repeating groups. (Not implemented)
 '''
 def create_1NF_tables(tables: List[Table]) -> List[Table]:
     res = []
@@ -22,6 +25,9 @@ def create_1NF_tables(tables: List[Table]) -> List[Table]:
 
 '''
     This function will take in a list of tables and return the list of tables in the best 2NF form according to MML.
+    Working definition of 2NF:
+    - The table is in 1NF.
+    - No non-prime attribute in the table is partially dependent on any candidate key.
 '''
 def create_2NF_tables(tables: List[Table]) -> List[Table]:
     
@@ -90,6 +96,9 @@ def create_2NF_tables(tables: List[Table]) -> List[Table]:
 
 '''
     This function will take in a list of tables and return the list of tables in the best 3NF form according to MML.
+    Working definition of 3NF:
+    - The table is in 2NF
+    - No non-prime attribute in the table is transitively dependent on the primary key.
 '''
 def create_3NF_tables(tables: List[Table]) -> List[Table]:
     possible_tables = []
@@ -100,14 +109,15 @@ def create_3NF_tables(tables: List[Table]) -> List[Table]:
     while following 3NF rules.
     '''
     def recursive_split(mainTable: Table, otherTables: List[Table] = []):
-        n_key_subsets = util.get_all_combinations_except_all(mainTable.non_primary_keys)
-        for subset1 in n_key_subsets:
-            for subset2 in n_key_subsets:
-                # Skip checking for dependencies if the chosen keysets have any intersecting values (keys cannot exist in both sets)
-                if len(set(subset1).intersection(set(subset2))) > 0:
+        nonprimary_key_subsets = util.get_all_combinations_except_all(mainTable.non_primary_keys)
+        nonprime_key_subsets = util.get_all_combinations(mainTable.non_prime_attributes)
+        for nonprimary_key_subset in nonprimary_key_subsets:
+            for nonprime_key_subset in nonprime_key_subsets:
+                # Skip the iteration if there are any common attributes in the two subsets
+                if len(set(nonprimary_key_subset).intersection(set(nonprime_key_subset))) > 0:
                     continue
-                if possible_dependency(mainTable, subset1, subset2):
-                    a, b = split_table(mainTable, subset1, subset2)
+                if possible_dependency(mainTable, nonprimary_key_subset, nonprime_key_subset):
+                    a, b = split_table(mainTable, nonprimary_key_subset, nonprime_key_subset)
                     recursive_split(a, otherTables + [b])
                     recursive_split(b, otherTables + [a])
         # This ensures that the appended combination is in 3NF
@@ -119,13 +129,15 @@ def create_3NF_tables(tables: List[Table]) -> List[Table]:
                 possible_tables.append([mainTable] + otherTables)
 
     def cannot_be_split_further(table: Table) -> bool:
-        n_key_subsets = util.get_all_combinations_except_all(table.non_primary_keys)
-        for subset1 in n_key_subsets:
-            for subset2 in n_key_subsets:
-                if len(set(subset1).intersection(set(subset2))) > 0:
+        nonprimary_key_subsets = util.get_all_combinations_except_all(table.non_primary_keys)
+        nonprime_key_subsets = util.get_all_combinations(table.non_prime_attributes)
+        for nonprimary_key_subset in nonprimary_key_subsets:
+            for nonprime_key_subset in nonprime_key_subsets:
+                # Skip the iteration if there are any common attributes in the two subsets
+                if len(set(nonprimary_key_subset).intersection(set(nonprime_key_subset))) > 0:
                     continue
-                if possible_dependency(table, subset1, subset2):
-                    return False    
+                if possible_dependency(table, nonprimary_key_subset, nonprime_key_subset):
+                    return False
         return True
 
     # Stores all possible 3NF table combinations for each table in tables
@@ -133,6 +145,11 @@ def create_3NF_tables(tables: List[Table]) -> List[Table]:
     for table in tables:
         possible_tables = []
         recursive_split(table)
+        # Guarantees 3NF even if its MML value is worse than 2NF
+        # Checks to see if there have been any splitting of tables; if so, remove all unsplit tables
+        if max(len(comb) for comb in possible_tables) > 1:
+            for comb in possible_tables:
+                possible_tables = [comb for comb in possible_tables if len(comb) > 1]
         all_table_list.append(possible_tables)
     # Use below line to help debug
     # return all_table_list
