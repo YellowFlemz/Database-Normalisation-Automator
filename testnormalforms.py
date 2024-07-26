@@ -31,7 +31,7 @@ table_data3 = [
 ]
 
 # -----------------------   Tables to test go below   -----------------------
-input_tables = [table_data3]
+input_tables = [table_data1]
 
 print("\n ------- 0NF Table(s) -------\n")
 testingtables = []
@@ -66,6 +66,7 @@ for t in best_1NF_tables:
     print("\nMML Value of Table: " + str(normalforms.calculate_mml([t])))
     t.display_table()
 print("\nMML Value of All Table(s): " + str(normalforms.calculate_mml(best_1NF_tables)))
+best_1NF_tables[0].debug()
 # Testing possible_partial_dependency function
 # table2 = best_1NF_tables[1]
 # print(table2.primary_keys)

@@ -66,12 +66,12 @@ def create_2NF_tables(tables: List[Table]) -> List[Table]:
         candidate_tables = all_candidate_tables(table)
         for t in candidate_tables:
             recursive_split(t)
-        all_table_list.append(possible_tables)
         # Guarantees 2NF even if its MML value is worse than 1NF
-        if len(possible_tables) > len(candidate_tables):
+        # Checks to see if there have been any splitting of tables; if so, remove all unsplit tables
+        if max(len(comb) for comb in possible_tables) > 1:
             for comb in possible_tables:
-                if len(comb) == 1:
-                    possible_tables.remove(comb)
+                possible_tables = [comb for comb in possible_tables if len(comb) > 1]
+        all_table_list.append(possible_tables)
     # Use below line to help debug
     # return all_table_list
 

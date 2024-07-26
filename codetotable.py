@@ -1,5 +1,14 @@
 import math
 
+# Function to increase probablility weighting toward less primary keys
+def ptmultiplier(a, p, v = 4):
+    if p >= 1 and p < a:
+        return (1-1/v)*(1/(math.pow(v, p-1)))
+    if p == a:
+        return math.pow(1/v,a-1)
+    else:
+        return Exception("Error: Invalid p value")
+
 # Function to calculate #H
 # A represents number of total attributes, at represents number of attributes in the current table, pt represents number of primary attributes in the current table
 # e.g. tabletotal = 1, A = 10, at = 10, pt = 3
@@ -10,7 +19,8 @@ def H(tabletotal: int, a: int, atpttuples: list[tuple[int, int]]) -> float:
     for atpttuple in atpttuples:
         at, pt = atpttuple[0], atpttuple[1]
         # IMPORTANT: changed encoding formula to multiply by (pt/at): this favours less primary keys over more primary keys
-        total += (pt / at) * ((math.log2(math.comb(a, at)) + math.log2(at) + math.log2(math.comb(at, pt))))
+        # total += (pt / at) * ((math.log2(math.comb(a, at)) + math.log2(at) + math.log2(math.comb(at, pt))))
+        total += (math.log2(math.comb(a, at)) + ptmultiplier(at, pt) * math.log2(at) + math.log2(math.comb(at, pt)))
     return round(total, 2)
 
 # Function to calculate #A
