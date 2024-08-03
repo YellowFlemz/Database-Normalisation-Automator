@@ -33,9 +33,24 @@ table_data3 = [
     [308, "18-Jun-2019", "20-Jun-2019", "Thursday"],
     [308, "21-Jun-2019", "27-Jun-2019", "Thursday"]
 ]
+table_data4 = [
+    ["Restaurant", "Pizza Variety", "Delivery Area"],
+    ["Pizza Hut", "Pepperoni", "Glen Waverley"],
+    ["Pizza Hut", "Pepperoni", "Box Hill"],
+    ["Pizza Hut", "Pepperoni", "Wantirna"],
+    ["Pizza Hut", "Hawaiian", "Glen Waverley"],
+    ["Pizza Hut", "Hawaiian", "Box Hill"],
+    ["Pizza Hut", "Hawaiian", "Wantirna"],
+    ["Domino's", "Cheese", "Wantirna"],
+    ["Domino's", "Hawaiian", "Wantirna"],
+    ["Factory 47", "Pepperoni", "Glen Waverley"],
+    ["Factory 47", "Pepperoni", "Box Hill"],
+    ["Factory 47", "Cheese", "Glen Waverley"],
+    ["Factory 47", "Cheese", "Box Hill"]
+]
 
 # -----------------------   Tables to test go below   -----------------------
-input_tables = [table_data1]
+input_tables = [table_data3]
 
 print("\n ------- 0NF Table(s) -------\n")
 testingtables = []
@@ -71,13 +86,13 @@ for t in best_1NF_tables:
     t.display_table()
 print("\nMML Value of All Table(s): " + str(normalforms.calculate_mml(best_1NF_tables)))
 
-# Testing possible_partial_dependency function
+# Testing possible_functional_dependency function
 # table2 = best_1NF_tables[1]
 # print(table2.primary_keys)
-# print(normalforms.possible_partial_dependency(table2, ("studentName", "age"), ("GPA", "studentNo"))) # Expected False
-# print(normalforms.possible_partial_dependency(table2, ["studentName"], ["GPA"])) # Expected True
-# print(normalforms.possible_partial_dependency(table2, ["studentName"], ["GPA", "studentNo"])) # Expected False
-# print(normalforms.possible_partial_dependency(table2, ["studentName", "age"], ["GPA"])) # Expected True
+# print(normalforms.possible_functional_dependency(table2, ("studentName", "age"), ("GPA", "studentNo"))) # Expected False
+# print(normalforms.possible_functional_dependency(table2, ["studentName"], ["GPA"])) # Expected True
+# print(normalforms.possible_functional_dependency(table2, ["studentName"], ["GPA", "studentNo"])) # Expected False
+# print(normalforms.possible_functional_dependency(table2, ["studentName", "age"], ["GPA"])) # Expected True
 
 # Test removing key column
 # table1 = best_1NF_tables[0]
@@ -118,6 +133,22 @@ for t in best_BCNF_tables:
     t.display_table()
 print("\nMML Value of All Table(s): " + str(normalforms.calculate_mml(best_BCNF_tables)))
 
+# Testing create_4NF_tables function
+best_4NF_tables = normalforms.create_4NF_tables(best_BCNF_tables)
+print("\n ------- Best 4NF Table(s) -------")
+for t in best_4NF_tables:
+    print("\nMML Value of Table: " + str(normalforms.calculate_mml([t])))
+    t.display_table()
+print("\nMML Value of All Table(s): " + str(normalforms.calculate_mml(best_4NF_tables)))
+
+# Testing possible_multivalued_dependency function
+# table4 = best_3NF_tables[0]
+# print(table4.primary_keys)
+# print(normalforms.possible_multivalued_dependency(table4, ["Restaurant"], ["Pizza Variety"])) # Expected True
+# print(normalforms.possible_multivalued_dependency(table4, ["Restaurant"], ["Delivery Area"])) # Expected True
+# print(normalforms.possible_multivalued_dependency(table4, ["Pizza Variety"], ["Delivery Area"])) # Expected True
+
+
 # --- If you want to debug all found 2NF combinations, uncomment below and uncomment return all table list line in the 2NF function ---
 # debugging_best_2NF_tables = normalforms.create_2NF_tables(best_1NF_tables)
 # print(debugging_best_2NF_tables)
@@ -128,7 +159,7 @@ print("\nMML Value of All Table(s): " + str(normalforms.calculate_mml(best_BCNF_
 #         for table in table_comb:
 #             table.display_table()
 
-# --- If you want to debug all found 3NF combinations, uncomment below and uncomment return all table list line in the 2NF function ---
+# --- If you want to debug all found 3NF combinations, uncomment below and uncomment return all table list line in the 3NF function ---
 # debugging_best_3NF_tables = normalforms.create_3NF_tables(best_2NF_tables)
 # print(debugging_best_3NF_tables)
 # for table_list in debugging_best_3NF_tables:
@@ -137,3 +168,28 @@ print("\nMML Value of All Table(s): " + str(normalforms.calculate_mml(best_BCNF_
 #         print(normalforms.calculate_mml(table_comb))
 #         for table in table_comb:
 #             table.display_table()
+
+# --- If you want to debug all found 4NF combinations, uncomment below and uncomment return all table list line in the 4NF function ---
+# debugging_best_4NF_tables = normalforms.create_4NF_tables(best_BCNF_tables)
+# print(debugging_best_4NF_tables)
+# for table_list in debugging_best_4NF_tables:
+#     for table_comb in table_list:
+#         print("------------------------")
+#         print(normalforms.calculate_mml(table_comb))
+#         for table in table_comb:
+#             table.display_table()
+
+# t1 = [["EMPLOYEE_ID", "STATE_CODE*", "NAME*", "HOME_STATE"],
+# [1, 26, "Alice", "Michigan"],
+# [2, 56, "Charlie", "Wyoming"],
+# [3, 56, "Alice", "Wyoming"],
+# [4, 26, "Bob", "Michigan"]]
+
+# t2 = [["EMPLOYEE_ID*", "STATE_CODE", "NAME", "HOME_STATE"],
+# [1, 26, "Alice", "Michigan"],
+# [2, 56, "Charlie", "Wyoming"],
+# [3, 56, "Alice", "Wyoming"],
+# [4, 26, "Bob", "Michigan"]]
+
+# print(normalforms.calculate_mml([Table(t1)]))
+# print(normalforms.calculate_mml([Table(t2)]))

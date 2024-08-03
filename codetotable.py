@@ -18,9 +18,8 @@ def H(tabletotal: int, a: int, atpttuples: list[tuple[int, int]]) -> float:
     total = len(atpttuples) * math.log2(a) + tabletotal
     for atpttuple in atpttuples:
         at, pt = atpttuple[0], atpttuple[1]
-        # IMPORTANT: changed encoding formula to multiply by (pt/at): this favours less primary keys over more primary keys
-        # total += (pt / at) * ((math.log2(math.comb(a, at)) + math.log2(at) + math.log2(math.comb(at, pt))))
-        total += (math.log2(math.comb(a, at)) + ptmultiplier(at, pt) * math.log2(at) + math.log2(math.comb(at, pt)))
+        # Primary key probability weighting applied
+        total += (math.log2(math.comb(a, at)) + (1 / ptmultiplier(at, pt)) * math.log2(at) + math.log2(math.comb(at, pt)))
     return round(total, 2)
 
 # Function to calculate #A
