@@ -403,7 +403,11 @@ def possible_multivalued_dependency(table: Table, keyset1: List[Any]|Tuple[Any],
         return False
     # This checks the following condition:
     #   - For the table T(A, B, C), if A -> B, then B and C must be independent of each other.
+    #   - This is done by checking if there are any possible functional dependencies (B -> C or B <- C).
+    if possible_functional_dependency(table, keyset1, keyset2) or possible_functional_dependency(table, keyset2, keyset1):
+        return False
     return True
+
 
 '''
     This function aims to effectively split a table into two, like would be done in 2NF/3NF.
