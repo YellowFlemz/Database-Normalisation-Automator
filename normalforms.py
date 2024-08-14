@@ -274,7 +274,7 @@ def create_4NF_tables(tables: List[Table]) -> List[Table]:
                     a, b = split_table_4NF(mainTable, key_subset1, key_subset2)
                     recursive_split(a, otherTables + [b])
                     recursive_split(b, otherTables + [a])
-        # This ensures that the appended combination is in BCNF
+        # This ensures that the appended combination is in 4NF
         if cannot_be_split_further(mainTable):
             for table in otherTables:
                 if not cannot_be_split_further(table):
@@ -302,7 +302,7 @@ def create_4NF_tables(tables: List[Table]) -> List[Table]:
                     return False
         return True
 
-    # Stores all possible BCNF table combinations for each table in tables
+    # Stores all possible 4NF table combinations for each table in tables
     all_table_list = []
     for table in tables:
         possible_tables = []

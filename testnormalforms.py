@@ -49,8 +49,33 @@ table_data4 = [
     ["Factory 47", "Cheese", "Box Hill"]
 ]
 
+table_data5 = [
+    ["Salesman", "Brand", "Product"],
+    ["Jack", "United", "Vacuum"],
+    ["Jack", "United", "Breadbox"],
+    ["Mary", "Borchio", "Scissors"],
+    ["Mary", "Borchio", "Vacuum"],
+    ["Mary", "Borchio", "Breadbox"],
+    ["Mary", "Borchio", "Umbrella"],
+    ["Bob", "Borchio", "Vacuum"],
+    ["Bob", "Borchio", "Telescope"],
+    ["Bob", "United", "Vacuum"],
+    ["Bob", "United", "Lamp"],
+    ["Bob", "Roless", "Tie"]
+]
+
+table_data6 = [
+    ["Subject", "Lecturer", "Semester"],
+    ["Computer Science", "Rhys", 1],
+    ["Computer Science", "Blake", 1],
+    ["Computer Science", "Blake", 2],
+    ["Math", "Blake", 1],
+    ["Math", "Marcus", 2],
+    ["English", "Ryan", 1],
+]
+
 # -----------------------   Tables to test go below   -----------------------
-input_tables = [table_data4]
+input_tables = [table_data6]
 
 print("\n ------- 0NF Table(s) -------\n")
 testingtables = []
