@@ -19,7 +19,7 @@ def H(tabletotal: int, a: int, atpttuples: list[tuple[int, int]]) -> float:
     for atpttuple in atpttuples:
         at, pt = atpttuple[0], atpttuple[1]
         # Primary key probability weighting applied
-        total += (math.log2(math.comb(a, at)) + (1 / ptmultiplier(at, pt)) * math.log2(at) + math.log2(math.comb(at, pt)))
+        total += (math.log2(math.comb(a, at)) + math.log2(at) + math.log2(math.comb(at, pt))) + -math.log2(ptmultiplier(at, pt))
     return round(total, 2)
 
 # Function to calculate #A

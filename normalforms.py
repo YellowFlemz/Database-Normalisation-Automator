@@ -1,8 +1,8 @@
-from table import Table
 from typing import List, Tuple, Any
+import copy
+from table import Table
 import codetotable as mml
 import util
-import copy
 
 '''
     This function will take in a list of tables and return the list of tables in the best 1NF form according to MML.

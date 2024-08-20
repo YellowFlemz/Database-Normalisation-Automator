@@ -1,7 +1,6 @@
 import normalforms
 from table import Table
-from typing import List, Tuple, Any
-import util
+
 
 # Create sample tables
 table_data1 = [
@@ -75,7 +74,7 @@ table_data6 = [
 ]
 
 # -----------------------   Tables to test go below   -----------------------
-input_tables = [table_data6]
+input_tables = [table_data4]
 
 print("\n ------- 0NF Table(s) -------\n")
 testingtables = []
@@ -162,9 +161,9 @@ print("\nMML Value of All Table(s): " + str(normalforms.calculate_mml(best_BCNF_
 best_4NF_tables = normalforms.create_4NF_tables(best_BCNF_tables)
 print("\n ------- Best 4NF Table(s) -------")
 for t in best_4NF_tables:
-    print("\nMML Value of Table: " + str(normalforms.calculate_mml([t])))
+    print("\nMessage Length of Table and Data: " + str(normalforms.calculate_mml([t])))
     t.display_table()
-print("\nMML Value of All Table(s): " + str(normalforms.calculate_mml(best_4NF_tables)))
+print("\nMessage Length of All Table(s) and Data: " + str(normalforms.calculate_mml(best_4NF_tables)))
 
 # Testing possible_multivalued_dependency function
 # table4 = best_3NF_tables[0]
