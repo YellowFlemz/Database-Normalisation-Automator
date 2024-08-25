@@ -74,7 +74,7 @@ table_data6 = [
 ]
 
 # -----------------------   Tables to test go below   -----------------------
-input_tables = [table_data4]
+input_tables = [table_data5]
 
 print("\n ------- 0NF Table(s) -------\n")
 testingtables = []

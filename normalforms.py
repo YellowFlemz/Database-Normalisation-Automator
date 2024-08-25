@@ -272,8 +272,10 @@ def create_4NF_tables(tables: List[Table]) -> List[Table]:
                 if possible_multivalued_dependency(mainTable, key_subset1, key_subset2):
                     # Uses a different split_table call than previous NFs
                     a, b = split_table_4NF(mainTable, key_subset1, key_subset2)
-                    recursive_split(a, otherTables + [b])
-                    recursive_split(b, otherTables + [a])
+                    # Check if no data anomalies are created
+                    if no_data_anomalies(mainTable, a, b):
+                        recursive_split(a, otherTables + [b])
+                        recursive_split(b, otherTables + [a])
         # This ensures that the appended combination is in 4NF
         if cannot_be_split_further(mainTable):
             for table in otherTables:
@@ -305,7 +307,7 @@ def create_4NF_tables(tables: List[Table]) -> List[Table]:
     # Stores all possible 4NF table combinations for each table in tables
     all_table_list = []
     for table in tables:
-        possible_tables = []
+        possible_tables = list([tables])
         # Run recursive_split() on all candidate keys of the table
         candidate_tables = all_candidate_tables(table)
         for t in candidate_tables:
@@ -467,6 +469,15 @@ def split_table_4NF(table: Table, keyset1: List[Any]|Tuple[Any], keyset2: List[A
     # Table transposition is needed to get the correct table structure
     second_table = Table(util.transpose(keylist1 + keylist2))
     return (first_table, second_table)
+
+'''
+Given a parent table and two child tables, this function will return True if there is no data loss or extra data gained when joining the two child tables.
+'''
+def no_data_anomalies(parentTable: Table, childTable1: Table, childTable2: Table):
+    # Basic check: check if the combined table has the same number of rows as the parent table
+    if len(childTable1.rows) + len(childTable2.rows) != len(parentTable.rows):
+        return False
+    return True
 
 '''
 Given a table, returns a List of tables using all possible candidate keys of the table.
