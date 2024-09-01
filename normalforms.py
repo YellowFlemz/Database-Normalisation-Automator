@@ -312,7 +312,7 @@ def create_4NF_tables(tables: List[Table]) -> List[Table]:
     # Stores all possible 4NF table combinations for each table in tables
     all_table_list = []
     for table in tables:
-        possible_tables = list([tables])
+        possible_tables = [[table]]
         # Run recursive_split() on all candidate keys of the table
         candidate_tables = all_candidate_tables(table)
         for t in candidate_tables:
@@ -345,24 +345,20 @@ def create_5NF_tables(tables: List[Table]) -> List[Table]:
     This function will essentially just split tables with 3 columns whenever possible.
     Note: Scope of 5NF is limited to tables with 3 columns only.
     '''
-    def recursive_split(mainTable: Table, otherTables: List[Table] = []):
+    def split(mainTable: Table):
         if len(mainTable.keys) == 3:
             # Uses a different split_table call than previous NFs
             a, b, c = split_table_5NF(mainTable)
-            recursive_split(a, otherTables + [b] + [c])
-            recursive_split(b, otherTables + [a] + [c])
-            recursive_split(c, otherTables + [a] + [b])
+            if is_lossless_5NF(mainTable, (a, b, c)):
+                possible_tables.append([a, b, c])
         else:
-            possible_tables.append([mainTable] + otherTables)
+            possible_tables.append([mainTable])
 
     # Stores all possible 5NF table combinations for each table in tables
     all_table_list = []
     for table in tables:
-        possible_tables = list([tables])
-        # Run recursive_split() on all candidate keys of the table
-        candidate_tables = all_candidate_tables(table)
-        for t in candidate_tables:
-            recursive_split(t)
+        possible_tables = [[table]]
+        split(table)
         # Guarantees 5NF even if its MML value is worse than 4NF
         # Checks to see if there have been any splitting of tables; if so, remove all unsplit tables
         if max(len(comb) for comb in possible_tables) > 1:
@@ -375,7 +371,6 @@ def create_5NF_tables(tables: List[Table]) -> List[Table]:
     #         for table in c:
     #             table.debug()
     #             print("\n")
-
 
     # For each table in tables, finds the best 5NF table combination according to MML.
     # This uses the combinations identified previously.
@@ -560,14 +555,71 @@ def split_table_5NF(table: Table) -> Tuple[Table, Table, Table]:
 
 def is_lossless_5NF(mainTable: Table, childTables: Tuple[Table, Table, Table]):
     '''
-    The mainTable can losslessly decompose into the childTables if the mainTable can be reconstructed 
-    by joining the childTables.
+    The mainTable can losslessly decompose into the childTables if the mainTable 
+    can be reconstructed by joining the childTables.
     '''
-    # If you pick any two tables from childTables, they will have one matching key.
-    # Find the matching keys between the child tables
-    matching_key_01 = util.remove_asterisks(set(childTables[0].keys).intersection(set(childTables[1].keys)))
-    matching_key_02 = util.remove_asterisks(set(childTables[0].keys).intersection(set(childTables[2].keys)))
-    matching_key_12 = util.remove_asterisks(set(childTables[1].keys).intersection(set(childTables[2].keys)))
+    # Set of all rows in the mainTable
+    main_table_rows = set([frozenset(row) for row in mainTable.rows])
+    # Find the child table that has the most rows
+    largest_child_table = max(childTables, key=lambda x: len(x.rows))
+    small_tables = list(set(childTables) - set([largest_child_table]))
+    st2, st3 = small_tables
+
+    # Build dictionaries for each small table
+    dict_st2a = {}
+    dict_st2b = {}
+    dict_st2 = {}
+    for i in range(len(st2.rows)):
+        if st2.rows[i][0] in dict_st2a:
+            dict_st2a[st2.rows[i][0]].append(st2.rows[i][1])
+        else:
+            dict_st2a[st2.rows[i][0]] = [st2.rows[i][1]]
+        if st2.rows[i][1] in dict_st2b:
+            dict_st2b[st2.rows[i][1]].append(st2.rows[i][0])
+        else:
+            dict_st2b[st2.rows[i][1]] = [st2.rows[i][0]]
+    dict_st2[st2.keys[0]] = dict_st2a
+    dict_st2[st2.keys[1]] = dict_st2b
+    dict_st3a = {}
+    dict_st3b = {}
+    dict_st3 = {}
+    for i in range(len(st3.rows)):
+        if st3.rows[i][0] in dict_st3a:
+            dict_st3a[st3.rows[i][0]].append(st3.rows[i][1])
+        else:
+            dict_st3a[st3.rows[i][0]] = [st3.rows[i][1]]
+        if st3.rows[i][1] in dict_st3b:
+            dict_st3b[st3.rows[i][1]].append(st3.rows[i][0])
+        else:
+            dict_st3b[st3.rows[i][1]] = [st3.rows[i][0]]
+    dict_st3[st3.keys[0]] = dict_st3a
+    dict_st3[st3.keys[1]] = dict_st3b
+
+    # Check if the main table rows are equal to the combined rows of the child tables
+    child_table_combined_rows = set()
+    largest_child_table_keys = largest_child_table.keys
+    if largest_child_table_keys[0] in dict_st2:
+        st2_relevant_dict = dict_st2[largest_child_table_keys[0]]
+        st3_relevant_dict = dict_st3[largest_child_table_keys[1]]
+        flag = True
+    else:
+        st2_relevant_dict = dict_st2[largest_child_table_keys[1]]
+        st3_relevant_dict = dict_st3[largest_child_table_keys[0]]
+        flag = False
+
+    for i in range(len(largest_child_table.rows)):
+        if flag:
+            a = largest_child_table.rows[i][0]
+            b = largest_child_table.rows[i][1]
+        else:
+            a = largest_child_table.rows[i][1]
+            b = largest_child_table.rows[i][0]
+        if a in st2_relevant_dict.keys() and b in st3_relevant_dict.keys():
+            common_values = set(st2_relevant_dict[a]).intersection(set(st3_relevant_dict[b]))
+            for c in common_values:
+                child_table_combined_rows.add(frozenset([a, c, b]))
+
+    return main_table_rows == child_table_combined_rows
 
 def no_data_anomalies(parentTable: Table, childTable1: Table, childTable2: Table):
     '''

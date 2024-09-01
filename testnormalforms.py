@@ -49,7 +49,7 @@ table_data4 = [
 ]
 
 table_data5 = [
-    ["Salesman*", "Brand*", "Product*"],
+    ["Salesman", "Brand", "Product"],
     ["Jack", "United", "Vacuum"],
     ["Jack", "United", "Breadbox"],
     ["Mary", "Borchio", "Scissors"],
@@ -161,6 +161,7 @@ for t in best_BCNF_tables:
     t.display_table()
 print("\nMML Value of All Table(s): " + str(normalforms.calculate_mml(best_BCNF_tables)))
 
+# ----- NOTE: Multiple tables being passed at a time in the below functions could cause errors -----
 # Testing create_4NF_tables function
 best_4NF_tables = normalforms.create_4NF_tables(best_BCNF_tables)
 print("\n ------- Best 4NF Table(s) -------")

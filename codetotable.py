@@ -64,5 +64,5 @@ def convert_to_LaTeX(nfs: list[str], values: list[list[float]]) -> str:
     for i in range(len(nfs)):
             # Values are to 2 DP
             tablestring += f"{nfs[i]}        &  {'{:.2f}'.format(values[i][0])}     &   {'{:.2f}'.format(values[i][2])}  &   {'{:.2f}'.format(values[i][2])} \\\\\n"
-        
+
     return "\\begin{table}[h]\n\\begin{center}\n{\n\\small\n\n\\begin{tabular}{|c |c |c| c|}\n\\hline\n  &  $\\#H$ (first part's length) & $\\#A$ (second part's length) & total message length\\\\\n\\hline\n" + tablestring + "\\hline\n\\end{tabular}\n}\n\\end{center}\n\\caption{Code length (bits) of model and data for different NFs}\n\\label{tab_NF_result}\n\\end{table}"
