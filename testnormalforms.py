@@ -78,7 +78,7 @@ table_data6 = [
 # b.debug()
 
 # -----------------------   Tables to test go below   -----------------------
-input_tables = [table_data6]
+input_tables = [table_data4, table_data5, table_data6]
 
 print("\n ------- 0NF Table(s) -------\n")
 testingtables = []
@@ -161,7 +161,6 @@ for t in best_BCNF_tables:
     t.display_table()
 print("\nMML Value of All Table(s): " + str(normalforms.calculate_mml(best_BCNF_tables)))
 
-# ----- NOTE: Multiple tables being passed at a time in the below functions could cause errors -----
 # Testing create_4NF_tables function
 best_4NF_tables = normalforms.create_4NF_tables(best_BCNF_tables)
 print("\n ------- Best 4NF Table(s) -------")
