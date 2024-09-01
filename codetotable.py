@@ -1,13 +1,28 @@
 import math
 
-# Function to increase probablility weighting toward less primary keys
-def ptmultiplier(a, p, v = 4):
+def ptmultiplier(a, p, v=4):
+    """
+    Calculates the ptmultiplier value based on the given parameters. Its purpose
+    is to increase the probability weighting towards tables with fewer primary keys.
+
+    Parameters:
+    a (int): The total number of attributes.
+    p (int): The total number of prime attributes.
+    v (int, optional): A calculation multiplier. Defaults to 4.
+
+    Returns:
+    float: The calculated ptmultiplier value.
+
+    Raises:
+    ValueError: If the p value is invalid.
+
+    """
     if p >= 1 and p < a:
-        return (1-1/v)*(1/(math.pow(v, p-1)))
+        return (1 - 1/v) * (1 / (math.pow(v, p-1)))
     if p == a:
-        return math.pow(1/v,a-1)
+        return math.pow(1/v, a-1)
     else:
-        return Exception("Error: Invalid p value")
+        raise ValueError("Error: Invalid p value")
 
 # Function to calculate #H
 # A represents number of total attributes, at represents number of attributes in the current table, pt represents number of primary attributes in the current table

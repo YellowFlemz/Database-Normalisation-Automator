@@ -49,7 +49,7 @@ table_data4 = [
 ]
 
 table_data5 = [
-    ["Salesman", "Brand", "Product"],
+    ["Salesman*", "Brand*", "Product*"],
     ["Jack", "United", "Vacuum"],
     ["Jack", "United", "Breadbox"],
     ["Mary", "Borchio", "Scissors"],
@@ -72,9 +72,13 @@ table_data6 = [
     ["Math", "Marcus", 2],
     ["English", "Ryan", 1],
 ]
+# t = Table(table_data5)
+# t.debug()
+# a, b, c = normalforms.split_table_5NF(t)
+# b.debug()
 
 # -----------------------   Tables to test go below   -----------------------
-input_tables = [table_data5]
+input_tables = [table_data6]
 
 print("\n ------- 0NF Table(s) -------\n")
 testingtables = []
@@ -164,6 +168,14 @@ for t in best_4NF_tables:
     print("\nMessage Length of Table and Data: " + str(normalforms.calculate_mml([t])))
     t.display_table()
 print("\nMessage Length of All Table(s) and Data: " + str(normalforms.calculate_mml(best_4NF_tables)))
+
+# Testing create_5NF_tables function
+best_5NF_tables = normalforms.create_5NF_tables(best_4NF_tables)
+print("\n ------- Best 5NF Table(s) -------")
+for t in best_5NF_tables:
+    print("\nMessage Length of Table and Data: " + str(normalforms.calculate_mml([t])))
+    t.display_table()
+print("\nMessage Length of All Table(s) and Data: " + str(normalforms.calculate_mml(best_5NF_tables)))
 
 # Testing possible_multivalued_dependency function
 # table4 = best_3NF_tables[0]

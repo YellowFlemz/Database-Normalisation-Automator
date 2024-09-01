@@ -1,11 +1,27 @@
 from __future__ import annotations
-import math
 from itertools import combinations
 from typing import List, Tuple, Any
+from copy import deepcopy
 import codetotable as mml
 import util
 
 class Table:
+    """
+    Represents a table in a database.
+
+    Attributes:
+        table_data (List[List[Any]]): The data of the table.
+        keys (List[str]): The column names of the table.
+        key_count (int): The number of columns in the table.
+        primary_keys (List[str]): The primary keys of the table.
+        non_primary_keys (List[str]): The non-primary keys of the table.
+        primary_key_count (int): The number of primary keys in the table.
+        rows (List[List[Any]]): The rows of data in the table.
+        unique_counts (List[int]): The number of unique instances for each column.
+        candidate_keys (List[Tuple[str, ...]]): The candidate keys of the table.
+        prime_attributes (List[str]): The prime attributes of the table.
+        non_prime_attributes (List[str]): The non-prime attributes of the table.
+    """
 
     def __init__(self, table_data: List[List[Any]]):
         self.table_data = table_data
@@ -24,16 +40,30 @@ class Table:
         self.prime_attributes = self.calculate_prime_attributes()
         self.non_prime_attributes = self.calculate_non_prime_attributes()
 
-    """Get all values of a key in the table."""
     def get_key_column(self, key: str) -> List[Any]:
+        """
+        Retrieves the values from a specific key column in the table.
+
+        Args:
+            key (str): The key column (by name) to retrieve values from.
+
+        Returns:
+            List[Any]: A list of values from the specified key column.
+        """
         key_index = self.keys.index(key)
         return [row[key_index] for row in self.rows]
-    
-    """
-    Remove a key and its corresponding values from the table.
-    Note: Do not pass in primary keys with asterisks (e.g. "studentNo*" should be passed as "studentNo")
-    """
+
     def remove_key_column(self, key: str) -> None:
+        """
+        Removes a key column from the table.
+        Note: Do not pass in primary keys with asterisks (e.g. "studentNo*" should be passed as "studentNo")
+
+        Args:
+            key (str): The key column to be removed.
+
+        Returns:
+            None
+        """
         key_index = self.keys.index(key)
         for row in self.rows:
             del row[key_index]
@@ -53,14 +83,25 @@ class Table:
         self.candidate_keys = self.calculate_candidate_keys()
         self.prime_attributes = self.calculate_prime_attributes()
         self.non_prime_attributes = self.calculate_non_prime_attributes()
-    
-    """Remove any duplicate rows."""
+
     def remove_duplicate_rows(self) -> None:
+        """
+        Removes duplicate rows from the table.
+        Note: The first row (header) is not considered for duplicate removal.
+
+        Returns:
+            None
+        """
         self.rows = [list(t) for t in set(tuple(row) for row in self.rows)]
         self.table_data = [self.table_data[0]] + self.rows
 
-    """Count the number of unique instances for each column."""
     def _count_unique_instances_per_column(self) -> List[int]:
+        """
+        Counts the number of unique instances per column in the table.
+
+        Returns:
+            A list of integers representing the number of unique instances per column.
+        """
         unique_counts = []
         for col_index in range(len(self.keys)):
             # set() removes duplicates
@@ -68,8 +109,16 @@ class Table:
             unique_counts.append(len(unique_values))
         return unique_counts
 
-    """Check if the given combination of column indices has unique values for all rows."""
     def _is_unique_combination(self, combination: Tuple[int, ...]) -> bool:
+        """
+        Checks if a combination of column indices in a row is unique.
+
+        Args:
+            combination (Tuple[int, ...]): A tuple of column indices.
+
+        Returns:
+            bool: True if the combination is unique in the table, False otherwise.
+        """
         seen = set()
         for row in self.rows:
             # subset is the values in the row at the specified indices
@@ -81,8 +130,17 @@ class Table:
             seen.add(subset)
         return True
 
-    """Generate all valid combinations of columns as primary keys."""
     def get_valid_primary_key_combinations(self) -> List[Tuple[str, ...]]:
+        """
+        Returns a list of valid primary key combinations for the table.
+
+        This method generates all possible combinations of the table's keys 
+        and checks if each combination is unique.
+        Only the combinations that are unique are considered valid primary key combinations.
+
+        Returns:
+            A list of tuples, where each tuple represents a valid primary key combination.
+        """
         num_columns = len(self.keys)
         valid_combinations = []
         for r in range(1, num_columns + 1):
@@ -91,72 +149,102 @@ class Table:
                 if self._is_unique_combination(comb):
                     valid_combinations.append(tuple(self.keys[i] for i in comb))
         return valid_combinations
-    
-    """
-    Calculate MML for all valid primary key combinations and return the one with the shortest MML.
-    """
+
     def calculate_best_primary_keys(self) -> Tuple[Tuple[str, ...], float]:
+        """
+        Calculates the best combination of valid primary keys for the table using 
+        the Minimum Message Length (MML) criterion. Returns the one with the
+        shortest MML.
+
+        Returns:
+            A tuple containing the best combination of primary keys and the corresponding MML value.
+        """
         best_combination = None
         best_mml = float('inf')
-        
+
         for comb in self.candidate_keys:
             # Calculates the MML value for the current combination
-            mml_value = mml.I(1, self.key_count, [(self.key_count, len(comb))], [(len(self.rows), self.unique_counts)])
+            mml_value = mml.I(1, self.key_count, [(self.key_count, len(comb))], \
+                [(len(self.rows), self.unique_counts)])
             # Break MML tiebreaks with the lowest number of attributes in primary key
-            if mml_value < best_mml or (mml_value == best_mml and (best_combination is None or len(comb) < len(best_combination))):
+            if mml_value < best_mml or (mml_value == best_mml and \
+                (best_combination is None or len(comb) < len(best_combination))):
                 best_mml = mml_value
                 best_combination = comb
-        
+
         return best_combination, best_mml
 
-    """
-    Calculate all possible candidate keys for the table.
-    """
     def calculate_candidate_keys(self) -> List[Tuple[str, ...]]:
+        """
+        Calculates and returns all possible candidate keys for the table.
+
+        Returns:
+            A list of tuples representing the candidate keys for the table.
+        """
         valid_combinations = self.get_valid_primary_key_combinations()
         candidate_keys = []
         for i in valid_combinations:
             for j in valid_combinations:
-                # If there is another combination which is a proper subset of the current combination, then it cannot be a candidate key
+                # If there is a combination which is a proper subset of the current combination,
+                # then it cannot be a candidate key
                 if set(j).issubset(set(i)) and set(i) != set(j):
                     break
             else:
                 candidate_keys.append(i)
         return candidate_keys
 
-    """
-    Calculate all prime attributes for the table.
-    """
     def calculate_prime_attributes(self) -> List[str]:
+        """
+        Calculates and returns the prime attributes of the table.
+
+        Returns:
+            A list of strings representing the prime attributes of the table.
+        """
         prime_attribute_set = set()
         for tup in self.candidate_keys:
             for key in tup:
                 prime_attribute_set.add(key)
         return list(prime_attribute_set)
-    
-    """
-    Calculate all non-prime attributes for the table.
-    """
+
     def calculate_non_prime_attributes(self) -> List[str]:
+        """
+        Calculates and returns the non-prime attributes of the table.
+
+        Returns:
+            A list of strings representing the non-prime attributes of the table.
+        """
         prime_attribute_set = set()
         for tup in self.candidate_keys:
             for key in tup:
                 prime_attribute_set.add(key)
         # Symmetric difference of all keys and prime attributes
         return list(set(self.keys) - prime_attribute_set)
-    
-    """Return a completely new table with the same table data but with no primary keys."""
+
     def return_stripped_table(self) -> Table:
-        new_table_data = [self.keys] + self.rows
+        """
+        Returns a new Table object with the same table data but with no primary keys.
+        """
+        new_table_data = deepcopy([self.keys]) + deepcopy(self.rows)
         return Table(new_table_data)
-        
-    """Display the table."""
+
     def display_table(self) -> None:
+        """
+        Display the table data in a tabular format.
+
+        Prints the keys and each row of the table, with columns separated by tabs.
+
+        Returns:
+            None
+        """
         for row in self.table_data:
             print('\t'.join(map(str, row)))
-        
-    """Print out all class variables of self."""
+
     def debug(self) -> None:
+        """
+        This method prints various attributes and data of the Table object for debugging purposes.
+        It displays table data, keys, key count, primary keys, non-primary keys, primary key count,
+        rows, unique counts, candidate keys, prime attributes, and non-prime attributes.
+        """
         print(f"Table Data: {self.table_data}")
         print(f"Keys: {self.keys}")
         print(f"Key Count: {self.key_count}")
