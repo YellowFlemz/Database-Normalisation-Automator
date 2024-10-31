@@ -7,7 +7,7 @@ import util
 
 class Table:
     """
-    Represents a table in a database.
+    Represents a table/relation in a database.
 
     Attributes:
         table_data (List[List[Any]]): The data of the table.

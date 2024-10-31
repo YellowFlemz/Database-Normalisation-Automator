@@ -1,8 +1,7 @@
 import normalforms
 from table import Table
 
-
-# Create sample tables
+# Tables to test
 table_data1 = [
     ["EMPLOYEE_ID", "NAME", "JOB_CODE", "JOB", "STATE_CODE", "HOME_STATE"],
     [1, "Alice", 1, "Chef", 26, "Michigan"],
@@ -86,20 +85,6 @@ table_data7 = [
 ]
 
 table_data8 = [
-    ["Student ID", "Name", "Address", "Course", "Grade", "Professor"],
-    ["101", "Alice", "1 Main Street", "Math", "A", "Dr. Smith"],
-    ["101", "Alice", "1 Main Street", "English", "B", "Dr. Johnson"],
-    ["101", "Alice", "1 Main Street", "History", "A", "Dr. Adams"],
-    ["102", "Bob", "2 Bowen Crescent", "Math", "B", "Dr. Smith"],
-    ["102", "Bob", "2 Bowen Crescent", "Biology", "C", "Dr. Green"],
-    ["103", "Charlie", "3 Pine Road", "English", "A", "Dr. Johnson"],
-    ["103", "Charlie", "3 Pine Road", "History", "A", "Dr. Adams"],
-    ["104", "Charlie", "3 Pine Road", "English", "A", "Dr. Johnson"],
-    ["105", "Jane", "3 Pine Road", "English", "A", "Dr. Johnson"],
-    ["106", "Charlie", "2 Bowen Crescent", "History", "A", "Dr. Adams"],
-]
-
-table_data9 = [
     ["Club", "Year", "Captain's Player ID", "Captain's DOB"],
     ["Waverley", 2003, 1, "09/09/1979"],
     ["Ravens", 2002, 3, "01/11/1973"],
@@ -112,17 +97,7 @@ table_data9 = [
     ["Drillers", 2005, 5, "14/02/1972"],
 ]
 
-table_data10 = [
-    ["Release Year", "Sales Ranking", "Video Game", "Release Year and Month"],
-    [2002, 1, "Half-Life", "2002-11"],
-    [2002, 3, "Battlefield 1942", "2002-09"],
-    [2003, 1, "Call of Duty", "2003-10"],
-    [2003, 2, "The Sims", "2003-02"],
-    [2004, 1, "Half-Life 2", "2004-11"],
-    [2004, 2, "World of Warcraft", "2004-11"],
-]
-
-table_data11 = [
+table_data9 = [
     ["Student ID","Course", "Professor"],
     [101, "Math", "Dr. Smith"],
     [101, "Math", "Dr. Mack"],
@@ -134,17 +109,7 @@ table_data11 = [
     [103, "Math", "Dr. Mack"],
 ]
 
-table_data12 = [
-    ["Student ID", "Name", "Address"],
-    [101, "Alice", "1 Main Street"],
-    [102, "Bob", "2 Bowen Crescent"],
-    [103, "Charlie", "3 Pine Road"],
-    [104, "David", "4 Elm Street"],
-    [105, "Eve", "5 Oak Avenue"],
-    [106, "Frank", "6 Pine Road"],
-]
-
-table_data13 = [
+table_data10 = [
     ["Project ID", "Employee ID", "Role"],
     [1, 1, "Manager"],
     [1, 2, "Developer"],
@@ -157,41 +122,18 @@ table_data13 = [
     [3, 4, "Developer"],
 ]
 
-# t = Table(table_data5)
-# t.debug()
-# a, b, c = normalforms.split_table_5NF(t)
-# b.debug()
-
 # -----------------------   Tables to test go below   -----------------------
-input_tables = [table_data5]
+input_tables = [table_data10]
 
 print("\n ------- 0NF Table(s) -------\n")
 testingtables = []
 for t in input_tables:
     temp = Table(t)
     temp.display_table()
-    #temp.debug()
     testingtables.append(temp)
     print("\n")
 
-# valid_primary_key_combinations1 = table1.get_valid_primary_key_combinations()
-# valid_primary_key_combinations2 = table2.get_valid_primary_key_combinations()
-
-# print("All valid combinations of primary keys for table 1:")
-# for comb in valid_primary_key_combinations1:
-#     print(comb)
-# print("Unique instances per column:", table1.unique_counts)
-# best_combination, best_mml = table1.calculate_best_primary_keys()
-# print(f"Best combination for primary key: {best_combination} with MML: {best_mml}")
-
-# print("All valid combinations of primary keys for table 2:")
-# for comb in valid_primary_key_combinations2:
-#     print(comb)
-# print("Unique instances per column:", table2.unique_counts)
-# best_combination, best_mml = table2.calculate_best_primary_keys()
-# print(f"Best combination for primary key: {best_combination} with MML: {best_mml}")
-
-# Create and display the new 1NF table
+# Testing create_1NF_tables function
 best_1NF_tables = normalforms.create_1NF_tables(testingtables)
 print("------- Best 1NF Table(s) -------")
 for t in best_1NF_tables:
@@ -243,6 +185,7 @@ print("\nMessage Length of All Table(s) and Data: " + str(normalforms.calculate_
 
 # --- If you want to debug all found 2NF combinations, uncomment below, comment above 2NF lines
 # and uncomment return all table list line in the 2NF function ---
+
 # debugging_best_2NF_tables = normalforms.create_2NF_tables(best_1NF_tables)
 # print(debugging_best_2NF_tables)
 # for table_list in debugging_best_2NF_tables:
@@ -254,6 +197,7 @@ print("\nMessage Length of All Table(s) and Data: " + str(normalforms.calculate_
 
 # --- If you want to debug all found 3NF combinations, uncomment below, comment above 3NF lines
 # and uncomment return all table list line in the 3NF function ---
+
 # debugging_best_3NF_tables = normalforms.create_3NF_tables(best_2NF_tables)
 # print(debugging_best_3NF_tables)
 # for table_list in debugging_best_3NF_tables:
@@ -265,6 +209,7 @@ print("\nMessage Length of All Table(s) and Data: " + str(normalforms.calculate_
 
 # --- If you want to debug all found 4NF combinations, uncomment below, comment above 4NF lines
 # and uncomment return all table list line in the 4NF function ---
+
 # debugging_best_4NF_tables = normalforms.create_4NF_tables(best_BCNF_tables)
 # print(debugging_best_4NF_tables)
 # for table_list in debugging_best_4NF_tables:
@@ -273,18 +218,3 @@ print("\nMessage Length of All Table(s) and Data: " + str(normalforms.calculate_
 #         print(normalforms.calculate_mml(table_comb))
 #         for table in table_comb:
 #             table.display_table()
-
-# t1 = [["EMPLOYEE_ID", "STATE_CODE*", "NAME*", "HOME_STATE"],
-# [1, 26, "Alice", "Michigan"],
-# [2, 56, "Charlie", "Wyoming"],
-# [3, 56, "Alice", "Wyoming"],
-# [4, 26, "Bob", "Michigan"]]
-
-# t2 = [["EMPLOYEE_ID*", "STATE_CODE", "NAME", "HOME_STATE"],
-# [1, 26, "Alice", "Michigan"],
-# [2, 56, "Charlie", "Wyoming"],
-# [3, 56, "Alice", "Wyoming"],
-# [4, 26, "Bob", "Michigan"]]
-
-# print(normalforms.calculate_mml([Table(t1)]))
-# print(normalforms.calculate_mml([Table(t2)]))
